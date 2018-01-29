@@ -40,6 +40,7 @@ export enum TokenType {
 export interface Options {
   tokenType?: TokenType,
   base?: string,
+  version?: number,
   agent?: https.Agent,
   ua?: string,
 }
@@ -52,7 +53,7 @@ export interface Options {
 export default (token: string, options: Options = {}): AxiosInstance => {
   const instance = axios.create({
     adapter,
-    baseURL: options.base || 'https://discordapp.com/api/v6',
+    baseURL: options.base || `https://discordapp.com/api/v${options.version || 6}`,
     httpsAgent: options.agent || undefined,
     headers: {
       Authorization: `${options.tokenType || TokenType.BOT} ${token}`,
