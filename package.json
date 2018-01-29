@@ -1,0 +1,39 @@
+{
+  "name": "@spectacles/rest",
+  "version": "0.1.1",
+  "description": "The Discord REST client library.",
+  "main": "dist/index.js",
+  "types": "typings/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "gulp && env-cmd .env node test/index.js",
+    "prepare": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spec-tacles/rest.git"
+  },
+  "author": "Will Nelson <nelson.will@live.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spec-tacles/rest/issues"
+  },
+  "homepage": "https://github.com/spec-tacles/rest#readme",
+  "dependencies": {
+    "axios": "^0.17.0",
+    "form-data": "^2.3.1"
+  },
+  "devDependencies": {
+    "@types/form-data": "^2.2.1",
+    "@types/node": "^8.0.46",
+    "compression-webpack-plugin": "^1.1.0",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-typescript": "^3.2.2",
+    "ts-loader": "^3.3.1",
+    "typescript": "^2.5.3",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "webpack": "^3.10.0"
+  }
+}
