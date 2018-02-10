@@ -1,4 +1,4 @@
-import { reflectors } from './util';
+import { reflectors } from '../util';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 /**

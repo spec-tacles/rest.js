@@ -1,6 +1,6 @@
 import instance, { Options } from './instance';
 import { reflectors } from './util';
-import Query, { ChainableQuery } from './Query';
+import Query, { ChainableQuery } from './structures/Query';
 
 export = (token: string, options: Options = {}): ChainableQuery => {
   const inst = instance(token, options);
