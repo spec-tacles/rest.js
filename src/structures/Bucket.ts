@@ -10,7 +10,8 @@ function pause(n: number): Promise<void> {
 export default class Bucket {
   /**
    * Whether we're globally ratelimited.
-   * @type {boolean=false}
+   * @type {boolean}
+   * @default false
    * @static
    */
   public static global: boolean = false;
