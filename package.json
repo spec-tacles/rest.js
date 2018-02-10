@@ -6,7 +6,7 @@
   "types": "typings/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "gulp && env-cmd .env node test/index.js",
+    "dev": "gulp && env-cmd .env node --trace-warnings test/index.js",
     "prepare": "gulp"
   },
   "repository": {

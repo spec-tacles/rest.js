@@ -36,6 +36,12 @@ export class Ratelimiter {
     if (this._timeDiffs.length > 10) this._timeDiffs.pop();
   }
 
+  public queue: Array<[
+    AxiosRequestConfig,
+    (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
+    (reason?: any) => void
+  ]> = [];
+
   /**
    * The total number of requests that can be made.
    * @type {number}
@@ -48,11 +54,13 @@ export class Ratelimiter {
    */
   public remaining: number = 1;
 
+  protected _started: boolean = false;
+
   /**
    * Discord timestamp at which this bucket's ratelimits will be reset.
    * @type {number}
    */
-  private _reset: number = 0;
+  protected _reset: number = 0;
 
   /**
    * Time at which this ratelimit bucket resets, according to the Unix timestamp of your machine.
@@ -93,6 +101,55 @@ export class Ratelimiter {
   public clear() {
     Ratelimiter.global = false;
     this.remaining = 1;
+  }
+
+  public enqueue<T = any>(config: AxiosRequestConfig) {
+    return new Promise<AxiosResponse<T>>((resolve, reject) => {
+      this.queue.push([config, resolve, reject]);
+      this._start();
+    });
+  }
+
+  protected async _start() {
+    if (this._started) return;
+    this._started = true;
+
+    let entry;
+    while (entry = this.queue.shift()) {
+      let [config, resolve, reject] = entry;
+
+      // pause while limited
+      while (this.limited) await pause(this.resetDistance);
+      this.clear();
+
+      try {
+        var res = await (axios.defaults.adapter as AxiosAdapter)(config);
+      } catch (e) {
+        reject(e);
+        return;
+      }
+      const date = new Date(res.headers.date).valueOf();
+
+      // set ratelimiting information
+      Ratelimiter.timeDiff = date - Date.now();
+      Ratelimiter.global = Boolean(res.headers['x-ratelimit-global']);
+      this.limit = Number(res.headers['x-ratelimit-limit'] || Infinity);
+      this.reset = Number(res.headers['x-ratelimit-reset'] || 0) * 1e3;
+      this.remaining = Number(res.headers['x-ratelimit-remaining'] || 1);
+
+      // retry on some errors
+      if (res.status === 429) {
+        this.reset = date + Number(res.headers['retry-after']) + Ratelimiter.timeDiff;
+        this.queue.push([config, resolve, reject]);
+      } else if (res.status >= 500 && res.status < 600) {
+        await pause(1e3 + Math.random() - 0.5);
+        this.queue.push([config, resolve, reject]);
+      } else {
+        resolve(res);
+      }
+    }
+
+    this._started = false;
   }
 
   /**
@@ -137,29 +194,6 @@ export default async function adapt(config: AxiosRequestConfig): Promise<AxiosRe
     limiters.set(route, limiter);
   }
 
-  // pause while limited
-  while (limiter.limited) await pause(limiter.resetDistance);
-  limiter.clear();
-
   // make request
-  const res = await (axios.defaults.adapter as AxiosAdapter)(config);
-  const date = new Date(res.headers.date).valueOf();
-
-  // set ratelimiting information
-  Ratelimiter.timeDiff = date - Date.now();
-  Ratelimiter.global = Boolean(res.headers['x-ratelimit-global']);
-  limiter.limit = Number(res.headers['x-ratelimit-limit'] || Infinity);
-  limiter.reset = Number(res.headers['x-ratelimit-reset'] || 0) * 1e3;
-  limiter.remaining = Number(res.headers['x-ratelimit-remaining'] || 1);
-
-  // retry on some errors
-  if (res.status === 429) {
-    limiter.reset = date + Number(res.headers['retry-after']) + Ratelimiter.timeDiff;
-    return adapt(config);
-  } else if (res.status >= 500 && res.status < 600) {
-    await pause(1e3 + Math.random() - 0.5);
-    return adapt(config);
-  }
-
-  return res;
+  return limiter.enqueue(config);
 }
