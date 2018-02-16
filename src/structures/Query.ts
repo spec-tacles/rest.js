@@ -1,11 +1,12 @@
 import { reflectors } from '../util';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 
+export type ChainableQuery = Query & { [key: string]: Query };
+
 /**
  * @typedef ChainableQuery
- * @type {Query|{[key: string]: Query}}
+ * @type {Query|Object<string, Query>}
  */
-export type ChainableQuery = Query & { [key: string]: Query };
 
 /**
  * An interface for making REST requests to the Discord API.
@@ -18,7 +19,7 @@ export default class Query<T = any> {
    * @type {string[]}
    * @readonly
    */
-  public readonly keys: string[];
+  public readonly keys: string[] = [];
 
   /**
    * Whether this query is frozen (ie. whether the endpoint can change).

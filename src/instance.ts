@@ -21,16 +21,17 @@ declare module 'axios' {
   }
 }
 
+export interface File {
+  name: string;
+  file: string | Buffer | NodeJS.ReadableStream | Blob | USVString;
+}
+
 /**
  * @typedef File
  * @type {object}
  * @property {string} name The file name
  * @property {string|Buffer|Readable} file The data of the file
  */
-export interface File {
-  name: string;
-  file: string | Buffer | NodeJS.ReadableStream | Blob | USVString;
-}
 
 export enum TokenType {
   BOT = 'Bot',
