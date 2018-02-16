@@ -68,6 +68,7 @@ export default (token: string, options: Options = {}): AxiosInstance => {
       for (const f of req.files) form.append(f.name, f.file, f.name);
       if (typeof req.data !== undefined) form.append('payload_json', JSON.stringify(req.data));
       req.data = form;
+      req.headers = Object.assign(req.headers, form.getHeaders());
       delete req.files;
     }
 
