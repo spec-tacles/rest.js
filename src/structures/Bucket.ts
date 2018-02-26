@@ -169,7 +169,7 @@ export default class Bucket {
         var res = await (axios.defaults.adapter as AxiosAdapter)(config);
       } catch (e) {
         reject(e);
-        return;
+        break;
       }
       const date = new Date(res.headers.date).valueOf();
 
