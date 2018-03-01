@@ -183,10 +183,10 @@ export default class Bucket {
       // retry on some errors
       if (res.status === 429) {
         this.reset = date + Number(res.headers['retry-after']) + Bucket.timeDiff;
-        this.queue.push([config, resolve, reject]);
+        this.queue.push(entry);
       } else if (res.status >= 500 && res.status < 600) {
         await pause(1e3 + Math.random() - 0.5);
-        this.queue.push([config, resolve, reject]);
+        this.queue.push(entry);
       } else {
         resolve(res);
       }
