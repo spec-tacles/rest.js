@@ -36,7 +36,7 @@ export default class Bucket {
 
   public static set timeDiff(data: number) {
     this._timeDiffs.unshift(data);
-    if (this._timeDiffs.length > 10) this._timeDiffs.pop();
+    if (this._timeDiffs.length > 10) this._timeDiffs.length = 10;
   }
 
   /**
