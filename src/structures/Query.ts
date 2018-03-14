@@ -11,7 +11,7 @@ export type ChainableQuery = Query & { [key: string]: Query };
 /**
  * An interface for making REST requests to the Discord API.
  */
-export default class Query<T = any> {
+export default class Query {
   public rest: AxiosInstance;
 
   /**
@@ -58,7 +58,7 @@ export default class Query<T = any> {
    * @param {*} data The data with which to create
    * @param {?AxiosRequestConfig} options Options to send with the request
    */
-  public create(data: any, options?: AxiosRequestConfig): Promise<T> {
+  public create<T = any>(data: any, options?: AxiosRequestConfig): Promise<T> {
     return this.rest.post<T>(this.endpoint, data, options);
   }
 
@@ -66,7 +66,7 @@ export default class Query<T = any> {
    * Make a GET request to the {@link Query#endpoint}.
    * @param {?AxiosRequestConfig} options Options to send with the request
    */
-  public fetch(options?: AxiosRequestConfig): Promise<T> {
+  public fetch<T = any>(options?: AxiosRequestConfig): Promise<T> {
     return this.rest.get<T>(this.endpoint, options);
   }
 
@@ -75,7 +75,7 @@ export default class Query<T = any> {
    * @param {*} data The data with which to create
    * @param {?AxiosRequestConfig} options Options to send with the request
    */
-  public update(data: any, options?: AxiosRequestConfig): Promise<T> {
+  public update<T = any>(data: any, options?: AxiosRequestConfig): Promise<T> {
     return this.rest.put<T>(this.endpoint, data, options);
   }
 
@@ -84,7 +84,7 @@ export default class Query<T = any> {
    * @param {*} data The data with which to create
    * @param {?AxiosRequestConfig} options Options to send with the request
    */
-  public edit(data: any, options?: AxiosRequestConfig) {
+  public edit<T = any>(data: any, options?: AxiosRequestConfig) {
     return this.rest.patch<T>(this.endpoint, data, options);
   }
 
@@ -92,7 +92,7 @@ export default class Query<T = any> {
    * Make a DELETE request to the {@link Query#endpoint}.
    * @param {?AxiosRequestConfig} options Options to send with the request
    */
-  public delete(options?: AxiosRequestConfig): Promise<T> {
-    return this.rest.delete(this.endpoint, options);
+  public delete<T = any>(options?: AxiosRequestConfig): Promise<T> {
+    return this.rest.delete<T>(this.endpoint, options);
   }
 }
