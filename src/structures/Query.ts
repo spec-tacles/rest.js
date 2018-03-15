@@ -1,7 +1,10 @@
 import { reflectors } from '../util';
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-export type ChainableQuery = Query & { [key: string]: Query };
+export type ChainableQuery = Query & QueryObject;
+export interface QueryObject {
+  [key: string]: ChainableQuery
+};
 
 /**
  * @typedef ChainableQuery
