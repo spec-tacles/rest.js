@@ -27,16 +27,12 @@
   "devDependencies": {
     "@types/form-data": "^2.2.1",
     "@types/node": "^8.9.5",
-    "compression-webpack-plugin": "^1.1.11",
     "del": "^3.0.0",
     "docdash": "^0.4.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-typescript": "^3.2.2",
     "jsdoc": "^3.5.5",
-    "ts-loader": "^3.5.0",
-    "typescript": "^2.7.2",
-    "uglifyjs-webpack-plugin": "^1.2.2",
-    "webpack": "^3.11.0"
+    "typescript": "^2.7.2"
   }
 }
