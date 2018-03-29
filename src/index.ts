@@ -1,11 +1,13 @@
+import { AxiosInstance } from 'axios';
 import instance, { Options } from './instance';
 import { reflectors } from './util';
-import Query, { ChainableQuery } from './structures/Query';
+import Query, { ChainableQuery, QueryObject } from './structures/Query';
 
-export = (token: string, options: Options = {}): ChainableQuery => {
+export = (token: string, options: Options = {}): ChainableQuery & AxiosInstance => {
   const inst = instance(token, options);
-  return new Proxy({} as ChainableQuery, {
+  return new Proxy(inst as ChainableQuery & AxiosInstance, {
     get(target, prop) {
+      if (prop in target) return target[prop];
       if (reflectors.includes(prop)) return target;
 
       const q = new Query(inst, prop.toString());
