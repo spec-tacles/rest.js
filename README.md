@@ -11,14 +11,14 @@ rest.channels['some id'].fetch().then(console.log);
 
 Any properties called on the rest instance will start a new query. Any additional properties will add to the endpoint. Finally, the request is finalized with one of the following methods:
 
-- `fetch`: GET
-- `edit`: PATCH
-- `update`: PUT
-- `delete`: DELETE
-- `create`: POST
+- `get`
+- `patch`
+- `put`
+- `delete`
+- `post`
 
 For example, you could create a guild ban like so:
 
 ```js
-rest.guilds['guild ID'].bans['user ID'].update({}, { reason: 'bad memes' });
+rest.guilds['guild ID'].bans['user ID'].put({}, { reason: 'bad memes' });
 ```
