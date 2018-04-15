@@ -30,6 +30,12 @@ export default class Query {
    */
   public frozen: boolean = false;
 
+  public post!: <T = any>(data: any, options?: AxiosRequestConfig) => Promise<T>;
+  public get!: <T = any>(options?: AxiosRequestConfig) => Promise<T>;
+  public put!: <T = any>(data: any, options?: AxiosRequestConfig) => Promise<T>;
+  public patch!: <T = any>(data: any, options?: AxiosRequestConfig) => Promise<T>;
+  public delete!: <T = any>(options?: AxiosRequestConfig) => Promise<T>;
+
   /**
    * @constructor
    * @param {Client} client The client to make this query with.
@@ -38,6 +44,8 @@ export default class Query {
   constructor(rest: AxiosInstance, start: string) {
     this.rest = rest;
     this.keys = [start];
+
+    for (const prop of ['post', 'get', 'put', 'patch', 'delete'] as ['post', 'get', 'put', 'patch', 'delete']) this[prop] = this._bind(prop);
   }
 
   /**
@@ -56,46 +64,7 @@ export default class Query {
     return this.frozen = true;
   }
 
-  /**
-   * Make a POST request to the {@link Query#endpoint}.
-   * @param {*} data The data with which to create
-   * @param {?AxiosRequestConfig} options Options to send with the request
-   */
-  public create<T = any>(data: any, options?: AxiosRequestConfig): Promise<T> {
-    return this.rest.post<T>(this.endpoint, data, options);
-  }
-
-  /**
-   * Make a GET request to the {@link Query#endpoint}.
-   * @param {?AxiosRequestConfig} options Options to send with the request
-   */
-  public fetch<T = any>(options?: AxiosRequestConfig): Promise<T> {
-    return this.rest.get<T>(this.endpoint, options);
-  }
-
-  /**
-   * Make a PUT request to the {@link Query#endpoint}.
-   * @param {*} data The data with which to create
-   * @param {?AxiosRequestConfig} options Options to send with the request
-   */
-  public update<T = any>(data: any, options?: AxiosRequestConfig): Promise<T> {
-    return this.rest.put<T>(this.endpoint, data, options);
-  }
-
-  /**
-   * Make a PATCH request to the {@link Query#endpoint}.
-   * @param {*} data The data with which to create
-   * @param {?AxiosRequestConfig} options Options to send with the request
-   */
-  public edit<T = any>(data: any, options?: AxiosRequestConfig) {
-    return this.rest.patch<T>(this.endpoint, data, options);
-  }
-
-  /**
-   * Make a DELETE request to the {@link Query#endpoint}.
-   * @param {?AxiosRequestConfig} options Options to send with the request
-   */
-  public delete<T = any>(options?: AxiosRequestConfig): Promise<T> {
-    return this.rest.delete<T>(this.endpoint, options);
+  protected _bind(prop: 'get' | 'post' | 'patch' | 'put' | 'delete'): any {
+    return this.rest[prop].bind(this.rest, this.endpoint);
   }
 }
