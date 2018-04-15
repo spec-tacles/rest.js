@@ -15,7 +15,7 @@ const r = rest(process.env.DISCORD_TOKEN);
     })
     .catch(() => undefined);
     console.log(new Date());
-    console.log(await r.post('/channels/411451531238572032/messages', { content: 'meme' }));
+    console.log(await r.post('/notexsts', { content: 'meme' }).catch(r => r));
     // await r.channels['411451531238572032'].messages[message.id].edit({ content: 'meme2' });
   // }
 })();

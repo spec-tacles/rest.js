@@ -60,6 +60,7 @@ export default (token: string, options: Options = {}): AxiosInstance => {
       Authorization: `${options.tokenType || TokenType.BOT} ${token}`,
       'User-Agent': options.ua || `DiscordBot (https://github.com/spec-tacles/rest, ${require('../package.json').version})`,
     },
+    validateStatus: () => true,
   });
 
   instance.interceptors.request.use(req => {
@@ -82,7 +83,8 @@ export default (token: string, options: Options = {}): AxiosInstance => {
   });
 
   instance.interceptors.response.use(res => {
-    return res.data;
+    if (res.status >= 200 && res.status < 300) return res.data;
+    throw res;
   });
 
   return instance;
