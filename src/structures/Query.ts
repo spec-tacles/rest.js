@@ -30,12 +30,6 @@ export default class Query {
    */
   public frozen: boolean = false;
 
-  public post!: <T = any>(data: any, options?: AxiosRequestConfig) => Promise<T>;
-  public get!: <T = any>(options?: AxiosRequestConfig) => Promise<T>;
-  public put!: <T = any>(data: any, options?: AxiosRequestConfig) => Promise<T>;
-  public patch!: <T = any>(data: any, options?: AxiosRequestConfig) => Promise<T>;
-  public delete!: <T = any>(options?: AxiosRequestConfig) => Promise<T>;
-
   /**
    * @constructor
    * @param {Client} client The client to make this query with.
@@ -44,8 +38,6 @@ export default class Query {
   constructor(rest: AxiosInstance, start: string) {
     this.rest = rest;
     this.keys = [start];
-
-    for (const prop of ['post', 'get', 'put', 'patch', 'delete'] as ['post', 'get', 'put', 'patch', 'delete']) this[prop] = this._bind(prop);
   }
 
   /**
@@ -54,6 +46,26 @@ export default class Query {
    */
   public get endpoint() {
     return `/${this.keys.join('/')}`;
+  }
+
+  public post<T = any>(data: any, options?: AxiosRequestConfig) {
+    return this.rest.post<T>(this.endpoint, data, options);
+  }
+
+  public get<T = any>(options?: AxiosRequestConfig) {
+    return this.rest.get<T>(this.endpoint, options);
+  }
+
+  public put<T = any>(data: any, options?: AxiosRequestConfig) {
+    return this.rest.put<T>(this.endpoint, data, options);
+  }
+
+  public delete<T = any>(options?: AxiosRequestConfig) {
+    return this.rest.delete<T>(this.endpoint, options);
+  }
+
+  public patch<T = any>(data: any, options?: AxiosRequestConfig) {
+    return this.rest.patch<T>(this.endpoint, data, options);
   }
 
   /**
