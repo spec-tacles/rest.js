@@ -62,11 +62,11 @@ export default class Bucket {
     return route;
   }
 
-  public queue: Array<[
-    AxiosRequestConfig,
-    (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
-    (reason?: any) => void
-  ]> = [];
+  public queue: Array<{
+    config: AxiosRequestConfig,
+    resolve: (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
+    reject: (reason?: any) => void,
+  }> = [];
 
   /**
    * The total number of requests that can be made.
@@ -81,6 +81,12 @@ export default class Bucket {
   public remaining: number = 1;
 
   /**
+   * The time to wait before retrying, in milliseconds.
+   * @type {number}
+   */
+  public timeout: number = 0;
+
+  /**
    * Whether this queue has started.
    * @type {boolean}
    * @protected
@@ -88,42 +94,11 @@ export default class Bucket {
   protected _started: boolean = false;
 
   /**
-   * Discord timestamp at which this bucket's ratelimits will be reset.
-   * @type {number}
-   * @protected
-   */
-  protected _reset: number = 0;
-
-  /**
-   * Time at which this ratelimit bucket resets, according to the Unix timestamp of your machine.
-   * @returns {number}
-   */
-  public get reset() {
-    return this._reset - Bucket.timeDiff;
-  }
-
-  /**
-   * Time at which this ratelimit bucker resets, according to a Discord timestamp.
-   * @param {number} data The timestamp to set
-   */
-  public set reset(data: number) {
-    this._reset = data;
-  }
-
-  /**
    * Whether this bucket is currently ratelimited.
    * @returns {boolean}
    */
   public get limited() {
-    return (Bucket.global || this.remaining < 1) && (this.resetDistance > 0);
-  }
-
-  /**
-   * The time distance until being un-ratelimited, accounting for server time differences.
-   * @returns {number}
-   */
-  public get resetDistance() {
-    return this.reset - Date.now();
+    return (Bucket.global || this.remaining < 1) && (this.timeout > 0);
   }
 
   /**
@@ -133,6 +108,7 @@ export default class Bucket {
   public clear() {
     Bucket.global = false;
     this.remaining = 1;
+    this.timeout = 0;
   }
 
   /**
@@ -142,7 +118,7 @@ export default class Bucket {
    */
   public enqueue<T = any>(config: AxiosRequestConfig) {
     return new Promise<AxiosResponse<T>>((resolve, reject) => {
-      this.queue.push([config, resolve, reject]);
+      this.queue.push({ config, resolve, reject });
       this._start();
     });
   }
@@ -158,37 +134,42 @@ export default class Bucket {
 
     let entry;
     while (entry = this.queue.shift()) {
-      let [config, resolve, reject] = entry;
-
       // pause while limited
-      while (this.limited) await pause(this.resetDistance);
+      if (this.limited) await pause(this.timeout);
       this.clear();
 
       // make request
       try {
-        var res = await (axios.defaults.adapter as AxiosAdapter)(config);
+        var res = await (axios.defaults.adapter as AxiosAdapter)(entry.config);
       } catch (e) {
-        reject(e);
+        entry.reject(e);
         continue;
       }
+
       const date = new Date(res.headers.date).valueOf();
+      const {
+        'x-ratelimit-global': global,
+        'x-ratelimit-limit': limit,
+        'x-ratelimit-reset': reset,
+        'x-ratelimit-remaining': remaining,
+      } = res.headers;
 
       // set ratelimiting information
       Bucket.timeDiff = date - Date.now();
-      Bucket.global = Boolean(res.headers['x-ratelimit-global']);
-      this.limit = Number(res.headers['x-ratelimit-limit'] || Infinity);
-      this.reset = Number(res.headers['x-ratelimit-reset'] || 0) * 1e3;
-      this.remaining = Number(res.headers['x-ratelimit-remaining'] || 1);
+      Bucket.global = Boolean(global);
+      this.limit = Number(global || Infinity);
+      this.timeout = reset ? (Number(reset) * 1e3) - date : 0;
+      this.remaining = Number(remaining || 1);
 
       // retry on some errors
       if (res.status === 429) {
-        this.reset = date + Number(res.headers['retry-after']) + Bucket.timeDiff;
+        this.timeout = Number(res.headers['retry-after'] || 0);
         this.queue.push(entry);
       } else if (res.status >= 500 && res.status < 600) {
         await pause(1e3 + Math.random() - 0.5);
         this.queue.push(entry);
       } else {
-        resolve(res);
+        entry.resolve(res);
       }
     }
 

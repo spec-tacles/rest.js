@@ -11,7 +11,9 @@
       "program": "${workspaceFolder}\\test\\index.js",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
-      ]
+      ],
+      "envFile": "${workspaceFolder}/.env",
+      "preLaunchTask": "build"
     }
   ]
 }
