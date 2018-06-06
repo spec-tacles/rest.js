@@ -148,7 +148,7 @@ export default class Bucket {
 
       const date = new Date(res.headers.date).valueOf();
       const {
-        'x-ratelimit-global': global,
+        'x-ratelimit-global': globally,
         'x-ratelimit-limit': limit,
         'x-ratelimit-reset': reset,
         'x-ratelimit-remaining': remaining,
@@ -156,8 +156,8 @@ export default class Bucket {
 
       // set ratelimiting information
       Bucket.timeDiff = date - Date.now();
-      Bucket.global = Boolean(global);
-      this.limit = Number(global || Infinity);
+      Bucket.global = Boolean(globally);
+      this.limit = Number(limit || Infinity);
       this.timeout = reset ? (Number(reset) * 1e3) - date : 0;
       this.remaining = Number(remaining || 1);
 
