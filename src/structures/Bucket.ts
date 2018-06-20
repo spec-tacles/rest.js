@@ -17,29 +17,6 @@ export default class Bucket {
   public static global: boolean = false;
 
   /**
-   * An array of time differences calculated from HTTP requests. Limited to size of 10.
-   * @type {number[]}
-   * @private
-   * @static
-   */
-  private static _timeDiffs: number[] = [];
-
-  /**
-   * Time difference between local client and remote server. Numbers > 0 indicate the remote server is ahead of your
-   * time. This number is averaged across the last 10 requests.
-   * @type {number}
-   * @static
-   */
-  public static get timeDiff() {
-    return this._timeDiffs.reduce((a, b) => a + b, 0) / this._timeDiffs.length;
-  }
-
-  public static set timeDiff(data: number) {
-    this._timeDiffs.unshift(data);
-    if (this._timeDiffs.length > 10) this._timeDiffs.length = 10;
-  }
-
-  /**
    * Make a route that can be used as a ratelimit bucket key.
    * from https://github.com/abalabahaha/eris
    * @param method The HTTP method
@@ -155,7 +132,6 @@ export default class Bucket {
       } = res.headers;
 
       // set ratelimiting information
-      Bucket.timeDiff = date - Date.now();
       Bucket.global = Boolean(globally);
       this.limit = Number(limit || Infinity);
       this.timeout = reset ? (Number(reset) * 1e3) - date : 0;
