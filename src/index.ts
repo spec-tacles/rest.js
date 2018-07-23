@@ -7,7 +7,7 @@ export = (token: string, options: Options = {}): ChainableQuery & AxiosInstance 
   const inst = instance(token, options);
   return new Proxy(inst as ChainableQuery & AxiosInstance, {
     get(target, prop) {
-      if (prop in target) return target[prop];
+      if (prop in target) return target[prop as any];
       if (reflectors.includes(prop)) return target;
 
       const q = new Query(inst, prop.toString());
