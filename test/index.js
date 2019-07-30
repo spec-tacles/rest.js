@@ -1,5 +1,9 @@
-const rest = require('../dist');
-const r = rest(process.env.DISCORD_TOKEN);
+const { rest, RedisStore } = require('../dist');
+const Redis = require('ioredis');
+const rd = new Redis('localhost');
+const r = rest(process.env.DISCORD_TOKEN, {
+  store: new RedisStore(rd),
+});
 // console.log(process.env.DISCORD_TOKEN);
 
 // r.asd.fetch().then(r => console.log(r));

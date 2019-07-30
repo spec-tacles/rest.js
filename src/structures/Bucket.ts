@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import RatelimitStore, { Ratelimits } from '../stores/RatelimitStore';
 
 function pause(n: number): Promise<void> {
   return new Promise(r => setTimeout(r, n));
@@ -8,14 +9,6 @@ function pause(n: number): Promise<void> {
  * A class for ratelimiting things.
  */
 export default class Bucket {
-  /**
-   * Whether we're globally ratelimited.
-   * @type {boolean}
-   * @default false
-   * @static
-   */
-  public static global: boolean = false;
-
   /**
    * Make a route that can be used as a ratelimit bucket key.
    * from https://github.com/abalabahaha/eris
@@ -39,29 +32,15 @@ export default class Bucket {
     return route;
   }
 
+  public static limited(limits: Ratelimits): boolean {
+    return (limits.global || limits.remaining < 1) && (limits.timeout > 0);
+  }
+
   public queue: Array<{
     config: AxiosRequestConfig,
     resolve: (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
     reject: (reason?: any) => void,
   }> = [];
-
-  /**
-   * The total number of requests that can be made.
-   * @type {number}
-   */
-  public limit: number = Infinity;
-
-  /**
-   * Requests remaining in this ratelimit bucket.
-   * @type {number}
-   */
-  public remaining: number = 1;
-
-  /**
-   * The time to wait before retrying, in milliseconds.
-   * @type {number}
-   */
-  public timeout: number = 0;
 
   /**
    * Whether this queue has started.
@@ -70,22 +49,22 @@ export default class Bucket {
    */
   protected _started: boolean = false;
 
-  /**
-   * Whether this bucket is currently ratelimited.
-   * @returns {boolean}
-   */
-  public get limited() {
-    return (Bucket.global || this.remaining < 1) && (this.timeout > 0);
+  constructor(protected store: RatelimitStore, public readonly route: string) {}
+
+  public get(): Promise<Ratelimits> {
+    return this.store.get(this.route);
+  }
+
+  public set(limits: Partial<Ratelimits>): Promise<void> {
+    return this.store.set(this.route, limits);
   }
 
   /**
    * Clear ratelimits.
-   * @returns {undefined}
+   * @returns {Promise<void>}
    */
   public clear() {
-    Bucket.global = false;
-    this.remaining = 1;
-    this.timeout = 0;
+    return this.store.clear(this.route);
   }
 
   /**
@@ -111,9 +90,11 @@ export default class Bucket {
 
     let entry;
     while (entry = this.queue.shift()) {
+      const limits = await this.get();
+
       // pause while limited
-      if (this.limited) await pause(this.timeout);
-      this.clear();
+      if (Bucket.limited(limits)) await pause(limits.timeout);
+      await this.clear();
 
       // make request
       try {
@@ -132,14 +113,17 @@ export default class Bucket {
       } = res.headers;
 
       // set ratelimiting information
-      Bucket.global = Boolean(globally);
-      this.limit = Number(limit || Infinity);
-      this.timeout = reset ? (Number(reset) * 1e3) - date : 0;
-      this.remaining = Number(remaining || 1);
+      await this.set({
+        global: Boolean(globally),
+        limit: Number(limit || Infinity),
+        remaining: Number(remaining || 1),
+        timeout: reset ? (Number(reset) * 1e3) - date : 0
+      });
 
       // retry on some errors
       if (res.status === 429) {
-        this.timeout = Number(res.headers['retry-after'] || 0);
+        console.error(new Date(), 'encountered 429');
+        await this.set({ timeout: Number(res.headers['retry-after'] || 0) });
         this.queue.push(entry);
       } else if (res.status >= 500 && res.status < 600) {
         await pause(1e3 + Math.random() - 0.5);

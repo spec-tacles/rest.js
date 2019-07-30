@@ -1,9 +1,12 @@
 import { AxiosInstance } from 'axios';
+import RedisStore from './stores/Redis';
 import instance, { Options } from './instance';
 import { reflectors } from './util';
 import Query, { ChainableQuery } from './structures/Query';
 
-export = (token: string, options: Options = {}): ChainableQuery & AxiosInstance => {
+export { RedisStore }
+export type Rest = ChainableQuery & AxiosInstance;
+export const rest = (token: string, options: Options = {}): ChainableQuery & AxiosInstance => {
   const inst = instance(token, options);
   return new Proxy(inst as ChainableQuery & AxiosInstance, {
     get(target, prop) {
