@@ -10,11 +10,11 @@ export const buckets: Map<string, Bucket> = new Map();
  */
 export default async function adapt(config: AxiosRequestConfig): Promise<AxiosResponse> {
   // configure route and ratelimiter
-  const bucket = config.headers['x-ratelimit-bucket'];
-  let b = buckets.get(bucket);
+  const route = Bucket.makeRoute(config.method || 'get', config.url || '');
+  let b = buckets.get(route);
   if (!b) {
     b = new Bucket();
-    buckets.set(bucket, b);
+    buckets.set(route, b);
   }
 
   // make request
