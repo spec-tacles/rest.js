@@ -16,29 +16,6 @@ export default class Bucket {
    */
   public static global: boolean = false;
 
-  /**
-   * Make a route that can be used as a ratelimit bucket key.
-   * from https://github.com/abalabahaha/eris
-   * @param method The HTTP method
-   * @param url The URL for which to create a route
-   * @returns {string}
-   * @static
-   */
-  public static makeRoute(method: string, url: string): string {
-    let route = url
-      .replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
-        return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
-      })
-      .replace(/\/reactions\/[^/]+/g, '/reactions/:id')
-      .replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token');
-
-    if (method === 'delete' && route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
-        route = method + route;
-    }
-
-    return route;
-  }
-
   public queue: Array<{
     config: AxiosRequestConfig,
     resolve: (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
