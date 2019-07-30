@@ -1,4 +1,4 @@
-import axios, { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import Bucket from './structures/Bucket';
 
 export const buckets: Map<string, Bucket> = new Map();

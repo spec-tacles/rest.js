@@ -9,8 +9,10 @@
       "dom"
     ],
     "declaration": true,
+    "declarationDir": "typings",
     "sourceMap": true,
-    "removeComments": false
+    "removeComments": false,
+    "outDir": "dist"
   },
   "include": [
     "./src/"

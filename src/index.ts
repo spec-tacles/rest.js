@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import instance, { Options } from './instance';
 import { reflectors } from './util';
-import Query, { ChainableQuery, QueryObject } from './structures/Query';
+import Query, { ChainableQuery } from './structures/Query';
 
 export = (token: string, options: Options = {}): ChainableQuery & AxiosInstance => {
   const inst = instance(token, options);

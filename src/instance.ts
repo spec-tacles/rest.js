@@ -23,7 +23,7 @@ declare module 'axios' {
 
 export interface File {
   name: string;
-  file: string | Buffer | NodeJS.ReadableStream | Blob | USVString;
+  file: string | Buffer | NodeJS.ReadableStream | Blob;
 }
 
 /**
