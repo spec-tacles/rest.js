@@ -122,7 +122,6 @@ export default class Bucket {
 
       // retry on some errors
       if (res.status === 429) {
-        console.error(new Date(), 'encountered 429');
         await this.set({ timeout: Number(res.headers['retry-after'] || 0) });
         this.queue.push(entry);
       } else if (res.status >= 500 && res.status < 600) {
