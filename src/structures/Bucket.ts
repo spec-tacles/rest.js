@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosAdapter } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 function pause(n: number): Promise<void> {
   return new Promise(r => setTimeout(r, n));
@@ -94,7 +94,7 @@ export default class Bucket {
 
       // make request
       try {
-        var res = await (axios.defaults.adapter as AxiosAdapter)(entry.config);
+        var res = await axios.defaults.adapter!(entry.config);
       } catch (e) {
         entry.reject(e);
         continue;
