@@ -3,7 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import * as FormData from 'form-data';
 
 import adapter from './adapter';
-import RatelimitStore from './stores/RatelimitStore';
+import RatelimitMutex from './stores/RatelimitMutex';
 
 declare module 'axios' {
   class AxiosInstance {
@@ -45,7 +45,7 @@ export interface Options {
   version?: number,
   agent?: https.Agent,
   ua?: string,
-  store?: RatelimitStore,
+  mutex?: RatelimitMutex,
 }
 
 /**
@@ -55,7 +55,7 @@ export interface Options {
  */
 export default (token: string, options: Options = {}): AxiosInstance => {
   const instance = axios.create({
-    adapter: adapter(options.store),
+    adapter: adapter(options.mutex!), // TODO: make this optional again
     baseURL: options.base || `https://discordapp.com/api/v${options.version || 6}`,
     httpsAgent: options.agent || undefined,
     headers: {

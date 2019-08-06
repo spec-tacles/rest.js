@@ -1,28 +1,50 @@
 import { Redis } from 'ioredis';
-import RatelimitStore, { Ratelimits, DEFAULT_LIMITS } from './RatelimitStore';
+import fs = require('fs');
+import RatelimitMutex, { Ratelimits } from './RatelimitMutex';
 
-export default class RedisStore implements RatelimitStore {
-	private static keys(route: string) {
-		return Object.keys(DEFAULT_LIMITS).map(suff => route + suff);
+function pause(n: number): Promise<void> {
+  return new Promise(r => setTimeout(r, n));
+}
+
+declare module 'ioredis' {
+	interface Redis {
+		gettimeout(key: string, limit: string, defaultTimeout: number): Promise<number>;
 	}
 
-	constructor(public readonly redis: Redis) {}
+	interface Pipeline {
+		gettimeout(key: string, limit: string, defaultTimeout: number): this;
+	}
+}
 
-	public async get(route: string): Promise<Ratelimits> {
-		const limits: string[] = await this.redis.mget(...RedisStore.keys(route));
-		return Promise.resolve({
-			global: limits[0] === 'false' ? false : limits[0] === 'true' ? true : DEFAULT_LIMITS.global,
-			limit: Number(limits[1] || DEFAULT_LIMITS.limit),
-			timeout: Number(limits[2] || DEFAULT_LIMITS.timeout),
-			remaining: Number(limits[3] || DEFAULT_LIMITS.remaining),
+export default class RedisStore implements RatelimitMutex {
+	public static readonly keys = {
+		remaining: (route: string) => `${route}:remaining`,
+		limit: (route: string) => `${route}:limit`,
+	};
+
+	constructor(public readonly redis: Redis) {
+		redis.defineCommand('gettimeout', {
+			numberOfKeys: 2,
+			lua: fs.readFileSync('./scripts/gettimeout.lua').toString(),
 		});
 	}
 
-	public async set(route: string, limits: Partial<Ratelimits>): Promise<void> {
-		await this.redis.mset(...Object.entries(limits).flatMap(([key, val]) => [route + key, val]));
+	public async claim(route: string): Promise<void> {
+		let timeout = await this.getTimeout(route);
+		while (timeout > 0) {
+			await pause(timeout);
+			timeout = await this.getTimeout(route);
+		}
 	}
 
-	public async clear(route: string): Promise<void> {
-		await this.redis.del(...RedisStore.keys(route));
+	public async set(route: string, limits: Partial<Ratelimits>): Promise<void> {
+		const pipe = this.redis.pipeline();
+		if (limits.timeout) pipe.pexpire(RedisStore.keys.remaining(route), limits.timeout);
+		if (limits.limit) pipe.set(RedisStore.keys.limit(route), limits.limit);
+		await pipe.exec();
+	}
+
+	private getTimeout(route: string) {
+		return this.redis.gettimeout(RedisStore.keys.remaining(route), RedisStore.keys.limit(route), 1e3);
 	}
 }
