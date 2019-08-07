@@ -1,4 +1,5 @@
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { RequestInit } from 'node-fetch';
+import Rest from '../Rest';
 
 export type ChainableQuery = Query & QueryObject;
 export interface QueryObject {
@@ -14,7 +15,7 @@ export interface QueryObject {
  * An interface for making REST requests to the Discord API.
  */
 export default class Query {
-  public rest: AxiosInstance;
+  public rest: Rest;
 
   /**
    * The routing keys of this query. For example, ['guilds', 'id'] translates to `/guilds/id`.
@@ -34,7 +35,7 @@ export default class Query {
    * @param {Client} client The client to make this query with.
    * @param {string} start The base of the endpoint of this query.
    */
-  constructor(rest: AxiosInstance, start: string) {
+  constructor(rest: Rest, start: string) {
     this.rest = rest;
     this.keys = [start];
   }
@@ -47,23 +48,23 @@ export default class Query {
     return `/${this.keys.join('/')}`;
   }
 
-  public post<T = any>(data: any, options?: AxiosRequestConfig) {
+  public post<T = any>(data: any, options?: RequestInit) {
     return this.rest.post<T>(this.endpoint, data, options);
   }
 
-  public get<T = any>(options?: AxiosRequestConfig) {
+  public get<T = any>(options?: RequestInit) {
     return this.rest.get<T>(this.endpoint, options);
   }
 
-  public put<T = any>(data: any, options?: AxiosRequestConfig) {
+  public put<T = any>(data: any, options?: RequestInit) {
     return this.rest.put<T>(this.endpoint, data, options);
   }
 
-  public delete<T = any>(options?: AxiosRequestConfig) {
+  public delete<T = any>(options?: RequestInit) {
     return this.rest.delete<T>(this.endpoint, options);
   }
 
-  public patch<T = any>(data: any, options?: AxiosRequestConfig) {
+  public patch<T = any>(data: any, options?: RequestInit) {
     return this.rest.patch<T>(this.endpoint, data, options);
   }
 

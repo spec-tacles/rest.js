@@ -1,6 +1,7 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import RatelimitMutex, { Ratelimit } from '../stores/RatelimitMutex';
 import { pause } from '../util';
+import Rest from '../Rest';
+import Request from '../Request';
 
 /**
  * A class for ratelimiting things.
@@ -34,8 +35,8 @@ export default class Bucket {
   }
 
   public queue: Array<{
-    config: AxiosRequestConfig,
-    resolve: (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
+    req: Request,
+    resolve: (value?: any | PromiseLike<any>) => void,
     reject: (reason?: any) => void,
   }> = [];
 
@@ -46,25 +47,27 @@ export default class Bucket {
    */
   protected _started: boolean = false;
 
-  constructor(protected mutex: RatelimitMutex, public readonly route: string) {}
+  constructor(public readonly rest: Rest, public readonly route: string) {}
+
+  public get mutex(): RatelimitMutex {
+    return this.rest.options.mutex;
+  }
 
   /**
    * Queue a request to be sent sequentially in this bucket.
    * @param {AxiosRequestConfig} config The request config to queue
    * @returns {Promise<AxiosResponse>}
    */
-  public async enqueue<T = any>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public async enqueue<T = any>(req: Request): Promise<T | Buffer> {
     await this.mutex.claim(this.route);
 
-    const res = await axios.defaults.adapter!(config);
-    const date = new Date(res.headers.date);
+    const res = await this.rest.do(req);
+    const date = new Date(res.headers.get('date')!);
     const secs = Math.floor(date.valueOf() / 1000);
-    const {
-      'x-ratelimit-global': globally,
-      'x-ratelimit-limit': limit,
-      'x-ratelimit-reset': reset,
-      'x-ratelimit-remaining': remaining,
-    } = res.headers;
+    const globally = res.headers.get('x-ratelimit-global');
+    const limit = res.headers.get('x-ratelimit-limit');
+    const remaining = res.headers.get('x-ratelimit-remaining');
+    const reset = res.headers.get('x-ratelimit-reset');
 
     // set ratelimiting information
     await this.mutex.set(this.route, {
@@ -77,13 +80,14 @@ export default class Bucket {
     // retry on some errors
     if (res.status === 429) {
       console.error(new Date(), 'encountered 429');
-      await this.mutex.set(this.route, { timeout: Number(res.headers['retry-after'] || 0) });
-      return this.enqueue(config);
+      await this.mutex.set(this.route, { timeout: Number(res.headers.get('retry-after') || 0) });
+      return this.enqueue(req);
     } else if (res.status >= 500 && res.status < 600) {
       await pause(1e3 + Math.random() - 0.5);
-      return this.enqueue(config);
+      return this.enqueue(req);
     }
 
-    return res;
+    if (res.headers.get('content-type') === 'application/json') return res.json();
+    return res.blob();
   }
 }

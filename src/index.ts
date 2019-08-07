@@ -1,14 +1,12 @@
-import { AxiosInstance } from 'axios';
 import RedisStore from './stores/Redis';
-import instance, { Options } from './instance';
 import { reflectors } from './util';
 import Query, { ChainableQuery } from './structures/Query';
+import Rest, { Options } from './Rest';
 
-export { RedisStore }
-export type Rest = ChainableQuery & AxiosInstance;
-export const rest = (token: string, options: Options = {}): ChainableQuery & AxiosInstance => {
-  const inst = instance(token, options);
-  return new Proxy(inst as ChainableQuery & AxiosInstance, {
+export { RedisStore, Rest, Options, Query, ChainableQuery }
+export const rest = (token: string, options: Partial<Options> = {}): ChainableQuery & Rest => {
+  const inst = new Rest(token, options);
+  return new Proxy(inst as ChainableQuery & Rest, {
     get(target, prop) {
       if (prop in target) return target[prop as any];
       if (reflectors.includes(prop)) return target;
@@ -20,7 +18,7 @@ export const rest = (token: string, options: Options = {}): ChainableQuery & Axi
           if (prop in target || typeof prop === 'symbol') return (target as any)[prop];
           if (prop != null && !target.frozen) target.keys.push(prop.toString());
           return p;
-        }
+        },
       });
       return p;
     },
