@@ -1,9 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import RatelimitMutex, { Ratelimit } from '../stores/RatelimitMutex';
-
-function pause(n: number): Promise<void> {
-  return new Promise(r => setTimeout(r, n));
-}
+import { pause } from '../util';
 
 /**
  * A class for ratelimiting things.
