@@ -2,7 +2,7 @@ const { rest, RedisStore } = require('../dist');
 const Redis = require('ioredis');
 const rd = new Redis('localhost');
 const r = rest(process.env.DISCORD_TOKEN, {
-  mutex: new RedisStore(rd),
+  // mutex: new RedisStore(rd),
 });
 // console.log(process.env.DISCORD_TOKEN);
 
@@ -19,8 +19,8 @@ const r = rest(process.env.DISCORD_TOKEN, {
         name: 'meme.txt',
         file: Buffer.from('meme'),
       }
-    }));
-    // .then(r => console.log(new Date()), console.error));
+    })
+    .then(r => console.log(new Date()), console.error));
   }
 
   await Promise.all(promises);

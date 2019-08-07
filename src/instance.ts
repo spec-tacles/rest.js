@@ -55,7 +55,7 @@ export interface Options {
  */
 export default (token: string, options: Options = {}): AxiosInstance => {
   const instance = axios.create({
-    adapter: adapter(options.mutex!), // TODO: make this optional again
+    adapter: adapter(options.mutex),
     baseURL: options.base || `https://discordapp.com/api/v${options.version || 6}`,
     httpsAgent: options.agent || undefined,
     headers: {

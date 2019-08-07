@@ -1,6 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import Bucket from './structures/Bucket';
 import RatelimitMutex from './stores/RatelimitMutex';
+import LocalMutex from './stores/Local';
 
 export const buckets: Map<string, Bucket> = new Map();
 
@@ -9,7 +10,7 @@ export const buckets: Map<string, Bucket> = new Map();
  * @param {Client} client The client for which to make this adapter
  * @returns {AxiosAdapter}
  */
-export default (store: RatelimitMutex) => async function adapt(config: AxiosRequestConfig): Promise<AxiosResponse> {
+export default (store: RatelimitMutex = new LocalMutex()) => async function adapt(config: AxiosRequestConfig): Promise<AxiosResponse> {
   // configure route and ratelimiter
   const route = Bucket.makeRoute(config.method || 'get', config.url || '');
   let b = buckets.get(route);

@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import RatelimitMutex, { Ratelimits } from '../stores/RatelimitMutex';
+import RatelimitMutex, { Ratelimit } from '../stores/RatelimitMutex';
 
 function pause(n: number): Promise<void> {
   return new Promise(r => setTimeout(r, n));
@@ -32,7 +32,7 @@ export default class Bucket {
     return route;
   }
 
-  public static limited(limits: Ratelimits): boolean {
+  public static limited(limits: Ratelimit): boolean {
     return (limits.global || limits.remaining < 1) && (limits.timeout < 0);
   }
 
