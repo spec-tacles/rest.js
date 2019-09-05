@@ -3,6 +3,7 @@
     "strict": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "target": "es2017",
     "lib": [
       "es2019",
@@ -15,6 +16,7 @@
     "outDir": "dist"
   },
   "include": [
-    "./src/"
+    "./src/",
+    "./test/"
   ]
 }

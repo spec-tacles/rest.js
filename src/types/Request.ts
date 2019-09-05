@@ -8,5 +8,6 @@ export interface File {
 export default interface Request extends RequestInit {
 	files?: File | File[];
 	reason?: string;
-	endpoint: string;
+	endpoint?: string;
+	failures?: number;
 }

@@ -1,7 +1,11 @@
-import RatelimitMutex, { Ratelimit } from '../stores/RatelimitMutex';
+import fetch, { Response } from 'node-fetch';
+import RatelimitMutex, { Ratelimit } from '../mutexes/RatelimitMutex';
+import Events from '../types/Events';
+import Request from '../types/Request';
+import { RetryReason } from '../types/Retry';
 import { pause } from '../util';
-import Rest from '../Rest';
-import Request from '../Request';
+import HTTPError, { InternalError } from './HTTPError';
+import Rest from './Rest';
 
 /**
  * A class for ratelimiting things.
@@ -30,23 +34,6 @@ export default class Bucket {
     return route;
   }
 
-  public static limited(limits: Ratelimit): boolean {
-    return (limits.global || limits.remaining < 1) && (limits.timeout < 0);
-  }
-
-  public queue: Array<{
-    req: Request,
-    resolve: (value?: any | PromiseLike<any>) => void,
-    reject: (reason?: any) => void,
-  }> = [];
-
-  /**
-   * Whether this queue has started.
-   * @type {boolean}
-   * @protected
-   */
-  protected _started: boolean = false;
-
   constructor(public readonly rest: Rest, public readonly route: string) {}
 
   public get mutex(): RatelimitMutex {
@@ -58,36 +45,66 @@ export default class Bucket {
    * @param {AxiosRequestConfig} config The request config to queue
    * @returns {Promise<AxiosResponse>}
    */
-  public async enqueue<T = any>(req: Request): Promise<T | Buffer> {
-    await this.mutex.claim(this.route);
+  public async make<T = any>(req: Request): Promise<T | Buffer> {
+    await this.mutex.claim(this.route, req.signal);
 
-    const res = await this.rest.do(req);
-    const date = new Date(res.headers.get('date')!);
-    const secs = Math.floor(date.valueOf() / 1000);
+		Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
+    this.rest.emit(Events.REQUEST, req);
+    const res = await fetch(this.rest.makeURL(req.endpoint!), req);
+    this.rest.emit(Events.RESPONSE, req, res);
+
     const globally = res.headers.get('x-ratelimit-global');
     const limit = res.headers.get('x-ratelimit-limit');
     const remaining = res.headers.get('x-ratelimit-remaining');
-    const reset = res.headers.get('x-ratelimit-reset');
+    const resetAfter = res.headers.get('x-ratelimit-reset-after');
 
-    // set ratelimiting information
-    await this.mutex.set(this.route, {
+    const ratelimit: Ratelimit = {
       global: Boolean(globally),
       limit: Number(limit || Infinity),
       remaining: Number(remaining || 1),
-      timeout: (Number(reset || secs) - secs) * 1000,
-    });
+      timeout: Number(resetAfter) * 1000,
+    };
+
+    // set ratelimiting information
+    await this.mutex.set(this.route, ratelimit);
 
     // retry on some errors
     if (res.status === 429) {
-      console.error(new Date(), 'encountered 429');
-      await this.mutex.set(this.route, { timeout: Number(res.headers.get('retry-after') || 0) });
-      return this.enqueue(req);
+      const delay = Number(res.headers.get('retry-after') || 0);
+      this.rest.emit(Events.RETRY, {
+        reason: RetryReason.RATELIMIT,
+        delay,
+        request: req,
+        response: res,
+        ratelimit,
+      });
+
+      if (delay !== ratelimit.timeout) await this.mutex.set(this.route, { timeout: delay });
+      return this.retry(req, res);
     } else if (res.status >= 500 && res.status < 600) {
-      await pause(1e3 + Math.random() - 0.5);
-      return this.enqueue(req);
+      const delay = 1e3 + Math.random() - 0.5;
+      this.rest.emit(Events.RETRY, {
+        reason: RetryReason.SERVER_ERROR,
+        delay,
+        request: req,
+        response: res,
+        ratelimit,
+      });
+
+      await pause(delay);
+      return this.retry(req, res);
     }
 
+    if (!res.ok) throw new HTTPError(res, await res.text());
     if (res.headers.get('content-type') === 'application/json') return res.json();
     return res.blob();
+  }
+
+  protected async retry<T>(req: Request, res: Response): Promise<T | Buffer> {
+    if (req.failures) req.failures++;
+    else req.failures = 1;
+
+    if (req.failures > this.rest.options.retryLimit) throw new HTTPError(res, InternalError.RETRY_LIMIT_EXCEEDED);
+    return this.make(req);
   }
 }

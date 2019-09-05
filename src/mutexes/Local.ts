@@ -1,5 +1,4 @@
 import RatelimitMutex, { Ratelimit } from './RatelimitMutex';
-import { pause } from '../util';
 
 export interface LocalRatelimit {
 	expiresAt: Date;
@@ -7,17 +6,9 @@ export interface LocalRatelimit {
 	remaining: number;
 }
 
-export default class LocalMutex implements RatelimitMutex {
+export default class LocalMutex extends RatelimitMutex {
 	public global?: Date;
 	protected limits: Map<string, Partial<LocalRatelimit>> = new Map();
-
-	public async claim(route: string): Promise<void> {
-		let timeout = await this.getTimeout(route);
-		while (timeout > 0) {
-			await pause(timeout);
-			timeout = await this.getTimeout(route);
-		}
-	}
 
 	public set(route: string, limits: Partial<Ratelimit>): Promise<void> {
 		let local = this.limits.get(route);
@@ -40,7 +31,7 @@ export default class LocalMutex implements RatelimitMutex {
 		return Promise.resolve();
 	}
 
-	private getTimeout(route: string): Promise<number> {
+	protected getTimeout(route: string): Promise<number> {
 		if (this.global) return Promise.resolve(this.global.valueOf() - Date.now());
 
 		let ratelimit = this.limits.get(route);
