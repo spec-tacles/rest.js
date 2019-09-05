@@ -122,17 +122,8 @@ export default class Rest {
 			'User-Agent': this.options.ua,
 		});
 
-		return fetch(this.makeURL(req.endpoint), {
-			method: req.method,
-			body: req.body,
-			headers: req.headers,
-			agent: req.agent || this.options.agent,
-			redirect: req.redirect,
-			follow: req.follow,
-			timeout: req.timeout,
-			compress: req.compress,
-			size: req.size,
-		});
+		if (!req.agent) req.agent = this.options.agent;
+		return fetch(this.makeURL(req.endpoint), req);
 	}
 
 	public makeURL(endpoint: string): string {
