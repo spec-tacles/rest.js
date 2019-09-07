@@ -10,25 +10,25 @@ export interface Ratelimit {
 }
 
 export default abstract class RatelimitMutex {
-	public claim(route: string, signal?: AbortSignal | null): Promise<void> {
+	public claim(route: string, token: string, signal?: AbortSignal | null): Promise<void> {
 		return new Promise(async (resolve, reject) => {
 			const listener = () => reject(new Error(InternalError.REQUEST_CANCELLED));
 			if (signal) signal.addEventListener('abort', listener);
 
 			let timeout: number;
 			do {
-				timeout = await this.getTimeout(route);
+				timeout = await this.getTimeout(route, token);
 				await pause(timeout);
 
 				// keep checking for a timeout while we don't have 0 and the request isn't aborted
 			} while (timeout > 0 && (!signal || !signal.aborted));
 
-			if (signal) signal.removeEventListener('abort', listener)
+			if (signal) signal.removeEventListener('abort', listener);
 			resolve();
 		});
 
 	}
 
-	public abstract set(route: string, limits: Partial<Ratelimit>): Promise<void>;
-	protected abstract getTimeout(route: string): Promise<number>;
+	public abstract set(route: string, limits: Partial<Ratelimit>, token: string): Promise<void>;
+	protected abstract getTimeout(route: string, token: string): Promise<number>;
 }
