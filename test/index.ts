@@ -3,9 +3,9 @@ import AbortController from 'abort-controller';
 import Redis = require('ioredis');
 
 const ctrl = new AbortController();
-const rd = new Redis('localhost');
+const rd = new Redis(process.env.REDIS_URI!);
 const r = new Rest(process.env.DISCORD_TOKEN!, {
-  // mutex: new RedisMutex(rd),
+  // mutex: new RedisMutex(rd, 'discord_bot'),
 });
 
 r.on(Events.RETRY, console.log);

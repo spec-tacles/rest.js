@@ -14,31 +14,38 @@ declare module 'ioredis' {
 }
 
 export default class RedisMutex extends RatelimitMutex {
-	public static readonly keys = {
-		global: 'global',
-		remaining: (route: string) => `${route}:remaining`,
-		limit: (route: string) => `${route}:limit`,
+
+	public readonly keys: {
+		global: string,
+		remaining: (route: string) => string,
+		limit: (route: string) => string
 	};
 
-	constructor(public readonly redis: Redis) {
+	constructor(public readonly redis: Redis, public readonly prefix?: string) {
 		super();
 		redis.defineCommand('gettimeout', {
 			numberOfKeys: 3,
 			lua: fs.readFileSync('./scripts/gettimeout.lua').toString(),
 		});
+
+		this.keys = {
+			global: `${ prefix ? `${ prefix }:` : '' }global`,
+			remaining: (route: string) => `${ prefix ? `${ prefix }:` : '' }${route}:remaining`,
+			limit: (route: string) => `${ prefix ? `${ prefix }:` : '' }${route}:limit`
+		}
 	}
 
 	public async set(route: string, limits: Partial<Ratelimit>): Promise<void> {
 		const pipe = this.redis.pipeline();
 		if (limits.timeout) {
-			if (limits.global) pipe.set(RedisMutex.keys.global, true, 'px', limits.timeout);
-			else pipe.pexpire(RedisMutex.keys.remaining(route), limits.timeout);
+			if (limits.global) pipe.set(this.keys.global, true, 'px', limits.timeout);
+			else pipe.pexpire(this.keys.remaining(route), limits.timeout);
 		}
-		if (limits.limit) pipe.set(RedisMutex.keys.limit(route), limits.limit);
+		if (limits.limit) pipe.set(this.keys.limit(route), limits.limit);
 		await pipe.exec();
 	}
 
 	protected async getTimeout(route: string) {
-		return this.redis.gettimeout(RedisMutex.keys.remaining(route), RedisMutex.keys.limit(route), RedisMutex.keys.global, 1e3);
+		return this.redis.gettimeout(this.keys.remaining(route), this.keys.limit(route), this.keys.global, 1e3);
 	}
 }
