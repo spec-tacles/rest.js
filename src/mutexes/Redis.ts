@@ -14,10 +14,11 @@ declare module 'ioredis' {
 }
 
 export default class RedisMutex extends RatelimitMutex {
-	public static readonly keys = {
-		global: (prefix?: string) => `${ prefix ? `${ prefix }:` : '' }global`,
-		remaining: (route: string, prefix?: string) => `${ prefix ? `${ prefix }:` : '' }${route}:remaining`,
-		limit: (route: string, prefix?: string) => `${ prefix ? `${ prefix }:` : '' }${route}:limit`,
+
+	public readonly keys: {
+		global: string,
+		remaining: (route: string) => string,
+		limit: (route: string) => string
 	};
 
 	constructor(public readonly redis: Redis, public readonly prefix?: string) {
@@ -26,6 +27,12 @@ export default class RedisMutex extends RatelimitMutex {
 			numberOfKeys: 3,
 			lua: fs.readFileSync('./scripts/gettimeout.lua').toString(),
 		});
+
+		this.keys = {
+			global: `${ prefix ? `${ prefix }:` : '' }global`,
+			remaining: (route: string) => `${ prefix ? `${ prefix }:` : '' }${route}:remaining`,
+			limit: (route: string) => `${ prefix ? `${ prefix }:` : '' }${route}:limit`
+		}
 	}
 
 	public async set(route: string, limits: Partial<Ratelimit>): Promise<void> {
