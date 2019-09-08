@@ -21,14 +21,14 @@ export default class Bucket {
    */
   public static makeRoute(method: string, url: string): string {
     let route = url
-        .replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
-          return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
-        })
-        .replace(/\/reactions\/[^/]+/g, '/reactions/:id')
-        .replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token');
+      .replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
+        return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
+      })
+      .replace(/\/reactions\/[^/]+/g, '/reactions/:id')
+      .replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token');
 
     if (method === 'delete' && route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
-      route = method + route;
+        route = method + route;
     }
 
     return route;
@@ -46,9 +46,9 @@ export default class Bucket {
    * @returns {Promise<AxiosResponse>}
    */
   public async make<T = any>(req: Request): Promise<T | Buffer> {
-    await this.mutex.claim(this.route, this.rest.token, req.signal);
+    await this.mutex.claim(this.route, req.signal);
 
-    Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
+		Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
     this.rest.emit(Events.REQUEST, req);
     const res = await fetch(this.rest.makeURL(req.endpoint!), req);
     this.rest.emit(Events.RESPONSE, req, res);
@@ -66,7 +66,7 @@ export default class Bucket {
     };
 
     // set ratelimiting information
-    await this.mutex.set(this.route, ratelimit, this.rest.token);
+    await this.mutex.set(this.route, ratelimit);
 
     // retry on some errors
     if (res.status === 429) {
@@ -79,7 +79,7 @@ export default class Bucket {
         ratelimit,
       });
 
-      if (delay !== ratelimit.timeout) await this.mutex.set(this.route, { timeout: delay }, this.rest.token);
+      if (delay !== ratelimit.timeout) await this.mutex.set(this.route, { timeout: delay });
       return this.retry(req, res);
     } else if (res.status >= 500 && res.status < 600) {
       const delay = 1e3 + Math.random() - 0.5;
