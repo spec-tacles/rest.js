@@ -15,13 +15,12 @@ export default abstract class RatelimitMutex {
 			const listener = () => reject(new Error(InternalError.REQUEST_CANCELLED));
 			if (signal) signal.addEventListener('abort', listener);
 
-			let timeout: number;
-			do {
-				timeout = await this.getTimeout(route);
+			// keep checking for a timeout while we don't have 0 and the request isn't aborted
+			let timeout = await this.getTimeout(route);
+			while (timeout > 0 && (!signal || !signal.aborted)) {
 				await pause(timeout);
-
-				// keep checking for a timeout while we don't have 0 and the request isn't aborted
-			} while (timeout > 0 && (!signal || !signal.aborted));
+				timeout = await this.getTimeout(route);
+			}
 
 			if (signal) signal.removeEventListener('abort', listener)
 			resolve();
