@@ -51,7 +51,6 @@ export default class Bucket {
 		Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
     this.rest.emit(Events.REQUEST, req);
     const res = await fetch(this.rest.makeURL(req.endpoint!), req);
-    this.rest.emit(Events.RESPONSE, req, res);
 
     const globally = res.headers.get('x-ratelimit-global');
     const limit = res.headers.get('x-ratelimit-limit');
@@ -60,10 +59,11 @@ export default class Bucket {
 
     const ratelimit: Ratelimit = {
       global: Boolean(globally),
-      limit: Number(limit || Infinity),
+      limit: Number(limit || 1),
       remaining: Number(remaining || 1),
       timeout: Number(resetAfter) * 1000,
     };
+    this.rest.emit(Events.RESPONSE, req, res, ratelimit);
 
     // set ratelimiting information
     await this.mutex.set(this.route, ratelimit);

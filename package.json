@@ -6,7 +6,7 @@
   "types": "typings/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run prepare && env-cmd node --trace-warnings dist/test/index.js",
+    "dev": "npm run prepare && env-cmd node --trace-warnings dist/test/multi_process.js",
     "prepare": "rimraf typings dist && tsc",
     "docs": "jsdoc -R README.md -c jsdoc.json"
   },

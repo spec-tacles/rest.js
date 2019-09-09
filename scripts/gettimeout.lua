@@ -13,7 +13,7 @@ end
 
 local ttl = redis.call('pttl', KEYS[1])
 if remaining <= 0 then
-	if ttl < 0 then return tonumber(ARGV[1])
+	if ttl <= 0 then return tonumber(ARGV[1])
 	else return ttl end
 end
 
