@@ -3,7 +3,7 @@
   "version": "0.6.0-alpha.0",
   "description": "The Discord REST client library.",
   "main": "dist/src/index.js",
-  "types": "typings/index.d.ts",
+  "types": "typings/src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run prepare && env-cmd node --trace-warnings dist/test/multi_process.js",
