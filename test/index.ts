@@ -30,7 +30,7 @@ r.on(Events.RESPONSE, (req: Request, res: Response, ratelimit: Ratelimit) => {
 
   const promises = [];
   for (let i = 0; i < 20; i++) {
-    promises.push(r.get(process.env.TESTING_URL!/*, {
+    promises.push(r.post(process.env.TESTING_URL!, {
       content: 'meme'
     }, {
       files: {
@@ -38,7 +38,7 @@ r.on(Events.RESPONSE, (req: Request, res: Response, ratelimit: Ratelimit) => {
         file: Buffer.from('meme'),
       },
       signal: ctrl.signal,
-    }*/));
+    }));
   }
 
   try {
