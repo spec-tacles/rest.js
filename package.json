@@ -1,6 +1,6 @@
 {
   "name": "@spectacles/rest",
-  "version": "0.5.2",
+  "version": "0.6.0-alpha.0",
   "description": "The Discord REST client library.",
   "main": "dist/src/index.js",
   "types": "typings/index.d.ts",
