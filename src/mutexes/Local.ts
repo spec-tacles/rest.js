@@ -40,9 +40,9 @@ export default class LocalMutex extends RatelimitMutex {
 			this.limits.set(route, ratelimit);
 		}
 
-		if (ratelimit.expiresAt && ratelimit.expiresAt.valueOf() <= Date.now()) {
+		if (!ratelimit.expiresAt || ratelimit.expiresAt.valueOf() <= Date.now()) {
 			ratelimit.expiresAt = undefined;
-			ratelimit.remaining = undefined;
+			ratelimit.remaining = ratelimit.limit;
 		}
 
 		if (ratelimit.remaining === undefined) {
@@ -51,8 +51,9 @@ export default class LocalMutex extends RatelimitMutex {
 			return Promise.resolve(0);
 		}
 
+		const ttl = ratelimit.expiresAt ? ratelimit.expiresAt.valueOf() - Date.now() : 0;
 		if (ratelimit.remaining <= 0) {
-			if (ratelimit.expiresAt) return Promise.resolve(ratelimit.expiresAt.valueOf() - Date.now());
+			if (ttl > 0) return Promise.resolve(ttl);
 			return Promise.resolve(1e3);
 		}
 

@@ -5,10 +5,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "target": "es2017",
-    "lib": [
-      "es2019",
-      "dom"
-    ],
+    "lib": ["es2019"],
     "declaration": true,
     "declarationDir": "typings",
     "sourceMap": true,

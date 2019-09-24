@@ -2,7 +2,7 @@ import { RequestInit } from 'node-fetch';
 
 export interface File {
   name: string;
-  file: string | Buffer | NodeJS.ReadableStream | Blob;
+  file: string | Buffer | NodeJS.ReadableStream;
 }
 
 export default interface Request extends RequestInit {
