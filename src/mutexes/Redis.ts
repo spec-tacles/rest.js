@@ -41,7 +41,7 @@ export default class RedisMutex extends RatelimitMutex {
 			if (limits.global) pipe.set(this.keys.global, true, 'px', limits.timeout);
 			else pipe.pexpire(this.keys.remaining(route), limits.timeout);
 		}
-		if (limits.limit) pipe.set(this.keys.limit(route), limits.limit);
+		pipe.set(this.keys.limit(route), limits.limit || 0);
 		await pipe.exec();
 	}
 

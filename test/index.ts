@@ -1,13 +1,13 @@
 import { Rest, RedisMutex, Events, Retry } from '../src';
 import AbortController from 'abort-controller';
-// import Redis = require('ioredis');
+import Redis = require('ioredis');
 import { Request, Response } from 'node-fetch';
 import { Ratelimit } from '../src/mutexes/RatelimitMutex';
 
 const ctrl = new AbortController();
-// const rd = new Redis(process.env.REDIS_URI!);
+const rd = new Redis(process.env.REDIS_URI!);
 const r = new Rest(process.env.DISCORD_TOKEN!, {
-  // mutex: new RedisMutex(rd, 'discord_bot'),
+  mutex: new RedisMutex(rd, 'discord_bot'),
 });
 const ids = new Map<Request, string>();
 let i = 0;
@@ -26,17 +26,17 @@ r.on(Events.RESPONSE, (req: Request, res: Response, ratelimit: Ratelimit) => {
 });
 
 (async () => {
-  // await rd.flushall();
+  await rd.flushall();
 
   const promises = [];
   for (let i = 0; i < 20; i++) {
-    promises.push(r.get(process.env.TESTING_URL!, {/*
+    promises.push(r.post(process.env.TESTING_URL!, {
       content: 'meme'
     }, {
       files: {
         name: 'meme.txt',
         file: Buffer.from('meme'),
-      },*/
+      },
       signal: ctrl.signal,
     }));
   }
@@ -47,6 +47,6 @@ r.on(Events.RESPONSE, (req: Request, res: Response, ratelimit: Ratelimit) => {
     console.error(e);
     ctrl.abort();
   } finally {
-    // rd.disconnect();
+    rd.disconnect();
   }
 })();

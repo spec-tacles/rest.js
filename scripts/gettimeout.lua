@@ -1,12 +1,16 @@
 local global = redis.call('pttl', KEYS[3])
 if global > 0 then return global end
 
+local limit = tonumber(redis.call('get', KEYS[2]))
+if limit == nil then limit = 1 end
+
+if limit <= 0 then -- limits below 1 are ignored
+	return 0
+end
+
 local remaining = tonumber(redis.call('get', KEYS[1]))
 
 if remaining == nil then
-	local limit = tonumber(redis.call('get', KEYS[2]))
-	if limit == nil then limit = 1 end
-
 	redis.call('set', KEYS[1], limit - 1)
 	return 0
 end
