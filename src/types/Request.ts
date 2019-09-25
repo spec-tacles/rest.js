@@ -1,8 +1,8 @@
 import { RequestInit } from 'node-fetch';
 
 export interface File {
-  name: string;
-  file: string | Buffer | NodeJS.ReadableStream;
+	name: string;
+	file: string | Buffer | NodeJS.ReadableStream;
 }
 
 export default interface Request extends RequestInit {
