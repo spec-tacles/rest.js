@@ -45,10 +45,10 @@ export default class Bucket {
    * @param {AxiosRequestConfig} config The request config to queue
    * @returns {Promise<AxiosResponse>}
    */
-  public async make<T = any>(req: Request): Promise<T | Buffer> {
+  public async make(req: Request): Promise<any> {
     await this.mutex.claim(this.route, req.signal);
 
-		Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
+    Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
     this.rest.emit(Events.REQUEST, req);
     const res = await fetch(this.rest.makeURL(req.endpoint!), req);
 
