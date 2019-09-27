@@ -1,12 +1,12 @@
 {
   "name": "@spectacles/rest",
-  "version": "0.5.2",
+  "version": "0.6.0-alpha.3",
   "description": "The Discord REST client library.",
-  "main": "dist/index.js",
-  "types": "typings/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "typings/src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run prepare && env-cmd .env node --trace-warnings test/index.js",
+    "dev": "npm run prepare && env-cmd node --trace-warnings dist/test/multi_process.js",
     "prepare": "rimraf typings dist && tsc",
     "docs": "jsdoc -R README.md -c jsdoc.json"
   },
@@ -21,12 +21,18 @@
   },
   "homepage": "https://github.com/spec-tacles/rest#readme",
   "dependencies": {
-    "axios": "^0.19.0",
-    "form-data": "^2.5.0"
+    "form-data": "^2.5.0",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "@types/form-data": "^2.5.0",
+    "@types/ioredis": "^4.0.13",
     "@types/node": "^12.6.8",
+    "@types/node-fetch": "^2.5.0",
+    "abort-controller": "^3.0.0",
     "docdash": "^0.4.0",
+    "env-cmd": "^9.0.3",
+    "ioredis": "^4.14.0",
     "jsdoc": "^3.6.3",
     "rimraf": "^2.6.3",
     "typescript": "^3.5.3"

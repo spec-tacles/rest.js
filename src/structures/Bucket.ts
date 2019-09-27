@@ -1,154 +1,109 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-
-function pause(n: number): Promise<void> {
-  return new Promise(r => setTimeout(r, n));
-}
+import fetch, { Response } from 'node-fetch';
+import RatelimitMutex, { Ratelimit } from '../mutexes/RatelimitMutex';
+import Events from '../types/Events';
+import Request from '../types/Request';
+import { RetryReason } from '../types/Retry';
+import { pause } from '../util';
+import HTTPError, { InternalError } from './HTTPError';
+import Rest from './Rest';
 
 /**
  * A class for ratelimiting things.
  */
 export default class Bucket {
-  /**
-   * Whether we're globally ratelimited.
-   * @type {boolean}
-   * @default false
-   * @static
-   */
-  public static global: boolean = false;
+	/**
+	 * Make a route that can be used as a ratelimit bucket key.
+	 * from https://github.com/abalabahaha/eris
+	 * @param method The HTTP method
+	 * @param url The URL for which to create a route
+	 * @returns {string}
+	 * @static
+	 */
+	public static makeRoute(method: string, url: string): string {
+		let route = url
+			.replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
+				return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
+			})
+			.replace(/\/reactions\/[^/]+/g, '/reactions/:id')
+			.replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token');
 
-  /**
-   * Make a route that can be used as a ratelimit bucket key.
-   * from https://github.com/abalabahaha/eris
-   * @param method The HTTP method
-   * @param url The URL for which to create a route
-   * @returns {string}
-   * @static
-   */
-  public static makeRoute(method: string, url: string): string {
-    let route = url
-      .replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
-        return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
-      })
-      .replace(/\/reactions\/[^/]+/g, '/reactions/:id')
-      .replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token');
+		if (method === 'delete' && route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
+				route = method + route;
+		}
 
-    if (method === 'delete' && route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
-        route = method + route;
-    }
+		return route;
+	}
 
-    return route;
-  }
+	constructor(public readonly rest: Rest, public readonly route: string) {}
 
-  public queue: Array<{
-    config: AxiosRequestConfig,
-    resolve: (value?: AxiosResponse | PromiseLike<AxiosResponse>) => void,
-    reject: (reason?: any) => void,
-  }> = [];
+	public get mutex(): RatelimitMutex {
+		return this.rest.options.mutex;
+	}
 
-  /**
-   * The total number of requests that can be made.
-   * @type {number}
-   */
-  public limit: number = Infinity;
+	/**
+	 * Queue a request to be sent sequentially in this bucket.
+	 * @param {AxiosRequestConfig} config The request config to queue
+	 * @returns {Promise<AxiosResponse>}
+	 */
+	public async make(req: Request): Promise<any> {
+		await this.mutex.claim(this.route, req.signal);
 
-  /**
-   * Requests remaining in this ratelimit bucket.
-   * @type {number}
-   */
-  public remaining: number = 1;
+		Rest.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
+		this.rest.emit(Events.REQUEST, req);
+		const res = await fetch(this.rest.makeURL(req.endpoint!), req);
 
-  /**
-   * The time to wait before retrying, in milliseconds.
-   * @type {number}
-   */
-  public timeout: number = 0;
+		const globally = res.headers.get('x-ratelimit-global');
+		const limit = res.headers.get('x-ratelimit-limit');
+		const remaining = res.headers.get('x-ratelimit-remaining');
+		const resetAfter = res.headers.get('x-ratelimit-reset-after');
 
-  /**
-   * Whether this queue has started.
-   * @type {boolean}
-   * @protected
-   */
-  protected _started: boolean = false;
+		const ratelimit: Partial<Ratelimit> = {};
+		if (globally) ratelimit.global = globally === 'true';
+		if (limit) ratelimit.limit = Number(limit);
+		if (remaining) ratelimit.remaining = Number(remaining);
+		if (resetAfter) ratelimit.timeout = Number(resetAfter) * 1000;
+		this.rest.emit(Events.RESPONSE, req, res, ratelimit);
 
-  /**
-   * Whether this bucket is currently ratelimited.
-   * @returns {boolean}
-   */
-  public get limited() {
-    return (Bucket.global || this.remaining < 1) && (this.timeout > 0);
-  }
+		// set ratelimiting information
+		await this.mutex.set(this.route, ratelimit);
 
-  /**
-   * Clear ratelimits.
-   * @returns {undefined}
-   */
-  public clear() {
-    Bucket.global = false;
-    this.remaining = 1;
-    this.timeout = 0;
-  }
+		// retry on some errors
+		if (res.status === 429) {
+			const delay = Number(res.headers.get('retry-after') || 0);
+			this.rest.emit(Events.RETRY, {
+				reason: RetryReason.RATELIMIT,
+				delay,
+				request: req,
+				response: res,
+				ratelimit,
+			});
 
-  /**
-   * Queue a request to be sent sequentially in this bucket.
-   * @param {AxiosRequestConfig} config The request config to queue
-   * @returns {Promise<AxiosResponse>}
-   */
-  public enqueue<T = any>(config: AxiosRequestConfig) {
-    return new Promise<AxiosResponse<T>>((resolve, reject) => {
-      this.queue.push({ config, resolve, reject });
-      this._start();
-    });
-  }
+			if (delay !== ratelimit.timeout) await this.mutex.set(this.route, { timeout: delay });
+			return this.retry(req, res);
+		} else if (res.status >= 500 && res.status < 600) {
+			const delay = 1e3 + Math.random() - 0.5;
+			this.rest.emit(Events.RETRY, {
+				reason: RetryReason.SERVER_ERROR,
+				delay,
+				request: req,
+				response: res,
+				ratelimit,
+			});
 
-  /**
-   * Start the queue.
-   * @protected
-   * @returns {Promise<undefined>}
-   */
-  protected async _start() {
-    if (this._started) return;
-    this._started = true;
+			await pause(delay);
+			return this.retry(req, res);
+		}
 
-    let entry;
-    while (entry = this.queue.shift()) {
-      // pause while limited
-      if (this.limited) await pause(this.timeout);
-      this.clear();
+		if (!res.ok) throw new HTTPError(res, await res.text());
+		if (res.headers.get('content-type') === 'application/json') return res.json();
+		return res.blob();
+	}
 
-      // make request
-      try {
-        var res = await axios.defaults.adapter!(entry.config);
-      } catch (e) {
-        entry.reject(e);
-        continue;
-      }
+	protected async retry<T>(req: Request, res: Response): Promise<T | Buffer> {
+		if (req.failures) req.failures++;
+		else req.failures = 1;
 
-      const date = new Date(res.headers.date).valueOf();
-      const {
-        'x-ratelimit-global': globally,
-        'x-ratelimit-limit': limit,
-        'x-ratelimit-reset': reset,
-        'x-ratelimit-remaining': remaining,
-      } = res.headers;
-
-      // set ratelimiting information
-      Bucket.global = Boolean(globally);
-      this.limit = Number(limit || Infinity);
-      this.timeout = reset ? (Number(reset) * 1e3) - date : 0;
-      this.remaining = Number(remaining || 1);
-
-      // retry on some errors
-      if (res.status === 429) {
-        this.timeout = Number(res.headers['retry-after'] || 0);
-        this.queue.push(entry);
-      } else if (res.status >= 500 && res.status < 600) {
-        await pause(1e3 + Math.random() - 0.5);
-        this.queue.push(entry);
-      } else {
-        entry.resolve(res);
-      }
-    }
-
-    this._started = false;
-  }
+		if (req.failures > this.rest.options.retryLimit) throw new HTTPError(res, InternalError.RETRY_LIMIT_EXCEEDED);
+		return this.make(req);
+	}
 }

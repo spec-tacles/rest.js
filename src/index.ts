@@ -1,25 +1,10 @@
-import { AxiosInstance } from 'axios';
-import instance, { Options } from './instance';
-import { reflectors } from './util';
-import Query, { ChainableQuery } from './structures/Query';
+import RedisMutex from './mutexes/Redis';
+import Bucket from './structures/Bucket';
+import Rest, { Options, TokenType } from './structures/Rest';
+import Events from './types/Events';
+import Request from './types/Request';
+import Retry, { RetryReason } from './types/Retry';
 
-export = (token: string, options: Options = {}): ChainableQuery & AxiosInstance => {
-  const inst = instance(token, options);
-  return new Proxy(inst as ChainableQuery & AxiosInstance, {
-    get(target, prop) {
-      if (prop in target) return target[prop as any];
-      if (reflectors.includes(prop)) return target;
+export { RedisMutex, Bucket, Options, TokenType, Rest, Events, Request, Retry, RetryReason };
 
-      const q = new Query(inst, prop.toString());
-      const p: any = new Proxy(q, {
-        get(target, prop) {
-          if (reflectors.includes(prop)) return target.endpoint;
-          if (prop in target || typeof prop === 'symbol') return (target as any)[prop];
-          if (prop != null && !target.frozen) target.keys.push(prop.toString());
-          return p;
-        }
-      });
-      return p;
-    },
-  });
-}
+export default Rest;
