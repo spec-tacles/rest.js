@@ -1,0 +1,14 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  compile:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+    - name: Install and compile
+      run: npm install
