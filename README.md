@@ -7,7 +7,7 @@ A REST router and ratelimiter for the Discord API. Supports local and distribute
 ```js
 const { Rest } = require('@spectacles/rest');
 const rest = new Rest('token here');
-rest.get(`channels/${someID}`).then(console.log);
+rest.get(`/channels/${someID}`).then(console.log);
 ```
 
 The rest instance has the following methods:
