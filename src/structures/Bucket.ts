@@ -25,7 +25,8 @@ export default class Bucket {
 				return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
 			})
 			.replace(/\/reactions\/[^/]+/g, '/reactions/:id')
-			.replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token');
+			.replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token')
+			.replace(/\?.*$/, '');
 
 		if (method === 'delete' && route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
 				route = method + route;
