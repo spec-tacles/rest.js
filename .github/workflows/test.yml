@@ -12,4 +12,4 @@ jobs:
     - uses: actions/setup-node@v1
     - run: npm install
     - name: Compile
-      run: npm prepare
+      run: npm run prepare
