@@ -10,6 +10,5 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
-    - run: npm install
-    - name: Compile
-      run: npm run prepare
+    - name: Install and compile
+      run: npm install
