@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
 import RatelimitMutex, { Ratelimit } from './RatelimitMutex';
 import fs = require('fs');
+import path = require('path');
 
 
 declare module 'ioredis' {
@@ -25,7 +26,7 @@ export default class RedisMutex extends RatelimitMutex {
 		super();
 		redis.defineCommand('gettimeout', {
 			numberOfKeys: 3,
-			lua: fs.readFileSync('./scripts/gettimeout.lua').toString(),
+			lua: fs.readFileSync(path.join(__dirname, '../../scripts/gettimeout.lua')).toString(),
 		});
 
 		this.keys = {
