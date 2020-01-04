@@ -3,17 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@spectacles/rest - v0.6.1</title>
+	<title>&quot;src/mutexes/Redis&quot; | @spectacles/rest - v0.6.1</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
+	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
 <header>
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">@spectacles/rest - v0.6.1</a>
+					<a href="../index.html" class="title">@spectacles/rest - v0.6.1</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -53,131 +53,99 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="globals.html">Globals</a>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_src_mutexes_redis_.html">&quot;src/mutexes/Redis&quot;</a>
 				</li>
 			</ul>
-			<h1> @spectacles/rest - v0.6.1</h1>
+			<h1>External module &quot;src/mutexes/Redis&quot;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#spectacles-rest" id="spectacles-rest" style="color: inherit; text-decoration: none;">
-					<h1>Spectacles REST</h1>
-				</a>
-				<p>A REST router and ratelimiter for the Discord API. Supports local and distributed ratelimit handling; as such, requests are not sent in order.</p>
-				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
-					<h2>Getting started</h2>
-				</a>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> { Rest } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@spectacles/rest'</span>);
-<span class="hljs-keyword">const</span> rest = <span class="hljs-keyword">new</span> Rest(<span class="hljs-string">'token here'</span>);
-rest.get(<span class="hljs-string">`/channels/<span class="hljs-subst">${someID}</span>`</span>).then(<span class="hljs-built_in">console</span>.log);</code></pre>
-				<p>The rest instance has the following methods:</p>
-				<ul>
-					<li><code>get</code></li>
-					<li><code>patch</code></li>
-					<li><code>put</code></li>
-					<li><code>delete</code></li>
-					<li><code>post</code></li>
-				</ul>
-				<p>PATCH, PUT, and POST take the request body as the second parameter. All methods take options as the last parameter: options are just an extension of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters">Fetch API <code>init</code> parameters</a>.</p>
-				<pre><code class="language-ts"><span class="hljs-keyword">interface</span> File {
-    name: <span class="hljs-built_in">string</span>;
-    file: <span class="hljs-built_in">string</span> | Buffer | NodeJS.ReadableStream;
-}
-
-<span class="hljs-keyword">interface</span> Request <span class="hljs-keyword">extends</span> RequestInit {
-    files?: File | File[];
-    reason?: <span class="hljs-built_in">string</span>;
-    endpoint?: <span class="hljs-built_in">string</span>;
-}</code></pre>
-				<p>For example, you could create a guild ban like so:</p>
-				<pre><code class="language-js">rest.put(<span class="hljs-string">`/guilds/<span class="hljs-subst">${guildID}</span>/bans/<span class="hljs-subst">${userID}</span>`</span>, {}, { <span class="hljs-attr">reason</span>: <span class="hljs-string">'bad memes'</span> });</code></pre>
-				<p>All REST calls resolve with the JSON parsed response from the Discord API or a Buffer if the Discord API did not send JSON. The library will attempt to retry all ratelimited or 5xx errors up to the <code>retryLimit</code> specified in the Rest constructor options.</p>
-				<pre><code class="language-ts"><span class="hljs-keyword">enum</span> TokenType {
-    BOT = <span class="hljs-string">'Bot'</span>,
-    BEARER = <span class="hljs-string">'Bearer'</span>,
-}
-
-<span class="hljs-keyword">interface</span> Options {
-    tokenType: TokenType,
-    base: <span class="hljs-built_in">string</span>,
-    version: <span class="hljs-built_in">number</span>,
-    agent: https.Agent,
-    ua: <span class="hljs-built_in">string</span>,
-    mutex: RatelimitMutex,
-    retryLimit: <span class="hljs-built_in">number</span>,
-}</code></pre>
-				<a href="#distributed-ratelimiting" id="distributed-ratelimiting" style="color: inherit; text-decoration: none;">
-					<h2>Distributed ratelimiting</h2>
-				</a>
-				<p>By default, the library uses a built-in local ratelimiter. To use the built-in Redis ratelimiter:</p>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> { RedisMutex, Rest } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@spectacles/rest'</span>);
-<span class="hljs-keyword">const</span> Redis = <span class="hljs-built_in">require</span>(<span class="hljs-string">'ioredis'</span>);
-
-<span class="hljs-keyword">const</span> redis = <span class="hljs-keyword">new</span> Redis();
-<span class="hljs-keyword">const</span> rest = <span class="hljs-keyword">new</span> Rest(<span class="hljs-string">'token'</span>, {
-    <span class="hljs-attr">mutex</span>: <span class="hljs-keyword">new</span> RedisMutex(redis, <span class="hljs-string">'optional key prefix'</span>),
-});
-
-<span class="hljs-comment">// use rest normally</span></code></pre>
-				<p>You can use anything as a mutex that fulfills the <code>RatelimitMutex</code> interface.</p>
-			</div>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-not-exported">
+							<h3>Modules</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-module tsd-parent-kind-external-module tsd-is-not-exported"><a href="_src_mutexes_redis_._ioredis_.html" class="tsd-kind-icon">&quot;ioredis&quot;</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/_src_mutexes_redis_.redismutex.html" class="tsd-kind-icon">Redis<wbr>Mutex</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
 					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Internals</span>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_index_.html">&quot;src/index&quot;</a>
+						<a href="_src_index_.html">&quot;src/index&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_mutexes_local_.html">&quot;src/mutexes/<wbr>Local&quot;</a>
+						<a href="_src_mutexes_local_.html">&quot;src/mutexes/<wbr>Local&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_mutexes_ratelimitmutex_.html">&quot;src/mutexes/<wbr>Ratelimit<wbr>Mutex&quot;</a>
+						<a href="_src_mutexes_ratelimitmutex_.html">&quot;src/mutexes/<wbr>Ratelimit<wbr>Mutex&quot;</a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="_src_mutexes_redis_.html">&quot;src/mutexes/<wbr>Redis&quot;</a>
+						<ul>
+							<li class=" tsd-kind-module tsd-parent-kind-external-module tsd-is-not-exported">
+								<a href="_src_mutexes_redis_._ioredis_.html">&quot;ioredis&quot;</a>
+							</li>
+						</ul>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_mutexes_redis_.html">&quot;src/mutexes/<wbr>Redis&quot;</a>
+						<a href="_src_structures_bucket_.html">&quot;src/structures/<wbr>Bucket&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_structures_bucket_.html">&quot;src/structures/<wbr>Bucket&quot;</a>
+						<a href="_src_structures_httperror_.html">&quot;src/structures/HTTPError&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_structures_httperror_.html">&quot;src/structures/HTTPError&quot;</a>
+						<a href="_src_structures_rest_.html">&quot;src/structures/<wbr>Rest&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_structures_rest_.html">&quot;src/structures/<wbr>Rest&quot;</a>
+						<a href="_src_types_events_.html">&quot;src/types/<wbr>Events&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_types_events_.html">&quot;src/types/<wbr>Events&quot;</a>
+						<a href="_src_types_request_.html">&quot;src/types/<wbr>Request&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_types_request_.html">&quot;src/types/<wbr>Request&quot;</a>
+						<a href="_src_types_retry_.html">&quot;src/types/<wbr>Retry&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_types_retry_.html">&quot;src/types/<wbr>Retry&quot;</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_src_util_.html">&quot;src/util&quot;</a>
+						<a href="_src_util_.html">&quot;src/util&quot;</a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_package_.html">&quot;package&quot;</a>
+						<a href="_package_.html">&quot;package&quot;</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="../classes/_src_mutexes_redis_.redismutex.html" class="tsd-kind-icon">Redis<wbr>Mutex</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -247,7 +215,7 @@ rest.get(<span class="hljs-string">`/channels/<span class="hljs-subst">${someID}
 	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
