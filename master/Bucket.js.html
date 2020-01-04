@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Bucket.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Bucket.html">Bucket</a><ul class='methods'><li data-type='method'><a href="Bucket.html#.makeRoute">makeRoute</a></li><li data-type='method'><a href="Bucket.html#make">make</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Bucket.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_fetch_1 = require("node-fetch");
+const Events_1 = require("../types/Events");
+const Retry_1 = require("../types/Retry");
+const util_1 = require("../util");
+const HTTPError_1 = require("./HTTPError");
+const Rest_1 = require("./Rest");
+/**
+ * A class for ratelimiting things.
+ */
+class Bucket {
+    constructor(rest, route) {
+        this.rest = rest;
+        this.route = route;
+    }
+    /**
+     * Make a route that can be used as a ratelimit bucket key.
+     * from https://github.com/abalabahaha/eris
+     * @param method The HTTP method
+     * @param url The URL for which to create a route
+     * @returns {string}
+     * @static
+     */
+    static makeRoute(method, url) {
+        let route = url
+            .replace(/\/([a-z-]+)\/(?:[0-9]{17,19})/g, (match, p) => {
+            return p === 'channels' || p === 'guilds' || p === 'webhooks' ? match : `/${p}/:id`;
+        })
+            .replace(/\/reactions\/[^/]+/g, '/reactions/:id')
+            .replace(/^\/webhooks\/(\d+)\/[A-Za-z0-9-_]{64,}/, '/webhooks/$1/:token')
+            .replace(/\?.*$/, '');
+        if (method === 'delete' &amp;&amp; route.endsWith('/messages/:id')) { // Delete Messsage endpoint has its own ratelimit
+            route = method + route;
+        }
+        return route;
+    }
+    get mutex() {
+        return this.rest.options.mutex;
+    }
+    /**
+     * Queue a request to be sent sequentially in this bucket.
+     * @param {AxiosRequestConfig} config The request config to queue
+     * @returns {Promise&lt;AxiosResponse>}
+     */
+    async make(req) {
+        await this.mutex.claim(this.route, req.signal);
+        Rest_1.default.setHeader(req, 'X-Ratelimit-Precision', 'millisecond');
+        this.rest.emit(Events_1.default.REQUEST, req);
+        const res = await node_fetch_1.default(this.rest.makeURL(req.endpoint), req);
+        const globally = res.headers.get('x-ratelimit-global');
+        const limit = res.headers.get('x-ratelimit-limit');
+        const remaining = res.headers.get('x-ratelimit-remaining');
+        const resetAfter = res.headers.get('x-ratelimit-reset-after');
+        const ratelimit = {};
+        if (globally)
+            ratelimit.global = globally === 'true';
+        if (limit)
+            ratelimit.limit = Number(limit);
+        if (remaining)
+            ratelimit.remaining = Number(remaining);
+        if (resetAfter)
+            ratelimit.timeout = Number(resetAfter) * 1000;
+        this.rest.emit(Events_1.default.RESPONSE, req, res, ratelimit);
+        // set ratelimiting information
+        await this.mutex.set(this.route, ratelimit);
+        // retry on some errors
+        if (res.status === 429) {
+            const delay = Number(res.headers.get('retry-after') || 0);
+            this.rest.emit(Events_1.default.RETRY, {
+                reason: Retry_1.RetryReason.RATELIMIT,
+                delay,
+                request: req,
+                response: res,
+                ratelimit,
+            });
+            if (delay !== ratelimit.timeout)
+                await this.mutex.set(this.route, { timeout: delay });
+            return this.retry(req, res);
+        }
+        else if (res.status >= 500 &amp;&amp; res.status &lt; 600) {
+            const delay = 1e3 + Math.random() - 0.5;
+            this.rest.emit(Events_1.default.RETRY, {
+                reason: Retry_1.RetryReason.SERVER_ERROR,
+                delay,
+                request: req,
+                response: res,
+                ratelimit,
+            });
+            await util_1.pause(delay);
+            return this.retry(req, res);
+        }
+        if (!res.ok)
+            throw new HTTPError_1.default(res, await res.text());
+        if (res.headers.get('content-type') === 'application/json')
+            return res.json();
+        return res.blob();
+    }
+    async retry(req, res) {
+        if (req.failures)
+            req.failures++;
+        else
+            req.failures = 1;
+        if (req.failures > this.rest.options.retryLimit)
+            throw new HTTPError_1.default(res, HTTPError_1.InternalError.RETRY_LIMIT_EXCEEDED);
+        return this.make(req);
+    }
+}
+exports.default = Bucket;
+//# sourceMappingURL=Bucket.js.map</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Sat Jan 04 2020 07:48:35 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
