@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run prepare && env-cmd node --trace-warnings dist/test/multi_process.js",
     "prepare": "rimraf typings dist && tsc && ncp scripts dist/scripts",
-    "docs": "jsdoc -R README.md -c jsdoc.json"
+    "docs": "typedoc --out docs --mode modules --entryPoint src/index.ts src"
   },
   "repository": {
     "type": "git",
@@ -30,12 +30,11 @@
     "@types/node": "^12.6.8",
     "@types/node-fetch": "^2.5.0",
     "abort-controller": "^3.0.0",
-    "docdash": "^0.4.0",
     "env-cmd": "^9.0.3",
     "ioredis": "^4.14.0",
-    "jsdoc": "^3.6.3",
     "ncp": "^2.0.0",
     "rimraf": "^2.6.3",
+    "typedoc": "^0.15.6",
     "typescript": "^3.5.3"
   }
 }
