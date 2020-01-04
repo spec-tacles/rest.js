@@ -1,0 +1,33 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+  release:
+    types: [created]
+jobs:
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.JS 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - run: npm install
+    - name: Build docs
+      run: npm run docs
+    - name: Move docs
+      run: |
+        branch=$(echo ${{ github.ref }} | cut -d '/' -f 3- -)
+        mkdir -p out/$branch
+        mv docs/* out/$branch
+    - name: Deploy docs
+      uses: peaceiris/actions-gh-pages@v2
+      env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./out
+      with:
+        keepFiles: true
