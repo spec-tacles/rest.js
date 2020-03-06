@@ -1,9 +1,48 @@
-import { Rest, RedisMutex, Events, Retry } from '../src';
+import { Rest, RedisMutex, Events, Retry } from '.';
 import AbortController from 'abort-controller';
-import Redis = require('ioredis');
-import { Request, Response } from 'node-fetch';
-import { Ratelimit } from '../src/mutexes/RatelimitMutex';
+// import Redis = require('ioredis');
+import fetch, { Response, RequestInit } from 'node-fetch';
+import { Ratelimit } from './mutexes/RatelimitMutex';
 
+jest.mock('node-fetch', () => {
+	const actualFetch = jest.requireActual('node-fetch');
+	return {
+		...actualFetch,
+		__esModule: true,
+		default: jest.fn(actualFetch),
+	};
+});
+
+const mockedFetch = fetch as any as jest.Mock<Promise<Response>, [RequestInit]>;
+
+let rest: Rest;
+
+beforeEach(() => {
+	rest = new Rest('token');
+});
+
+test('should succeed with empty data', async () => {
+	const res = new Response();
+	mockedFetch.mockResolvedValue(res);
+
+	const result = await rest.get('');
+	expect(result.constructor.name).toBe('Blob');
+	expect(result).toHaveProperty('size', 0);
+});
+
+test('should succeed with JSON data', async () => {
+	const res = new Response('{}', {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+	mockedFetch.mockResolvedValue(res);
+
+	const result = await rest.get('');
+	expect(result).toStrictEqual({});
+})
+
+/*
 const ctrl = new AbortController();
 const rd = new Redis(process.env.REDIS_URI!);
 const r = new Rest(process.env.DISCORD_TOKEN!, {
@@ -50,3 +89,4 @@ r.on(Events.RESPONSE, (req: Request, res: Response, ratelimit: Ratelimit) => {
 		rd.disconnect();
 	}
 })();
+*/

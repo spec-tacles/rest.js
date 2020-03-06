@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -13,7 +14,6 @@
     "outDir": "dist"
   },
   "include": [
-    "./src/",
-    "./test/"
+    "./src/"
   ]
 }

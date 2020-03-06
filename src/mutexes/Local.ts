@@ -51,8 +51,8 @@ export default class LocalMutex extends RatelimitMutex {
 			return Promise.resolve(0);
 		}
 
-		const ttl = ratelimit.expiresAt ? ratelimit.expiresAt.valueOf() - Date.now() : 0;
 		if (ratelimit.remaining <= 0) {
+			const ttl = ratelimit.expiresAt ? ratelimit.expiresAt.valueOf() - Date.now() : 0;
 			if (ttl > 0) return Promise.resolve(ttl);
 			return Promise.resolve(1e3);
 		}

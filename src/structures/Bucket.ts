@@ -55,13 +55,11 @@ export default class Bucket {
 
 		const globally = res.headers.get('x-ratelimit-global');
 		const limit = res.headers.get('x-ratelimit-limit');
-		const remaining = res.headers.get('x-ratelimit-remaining');
 		const resetAfter = res.headers.get('x-ratelimit-reset-after');
 
 		const ratelimit: Partial<Ratelimit> = {};
 		if (globally) ratelimit.global = globally === 'true';
 		if (limit) ratelimit.limit = Number(limit);
-		if (remaining) ratelimit.remaining = Number(remaining);
 		if (resetAfter) ratelimit.timeout = Number(resetAfter) * 1000;
 		this.rest.emit(Events.RESPONSE, req, res, ratelimit);
 
@@ -100,7 +98,7 @@ export default class Bucket {
 		return res.blob();
 	}
 
-	protected async retry<T>(req: Request, res: Response): Promise<T | Buffer> {
+	protected async retry(req: Request, res: Response): Promise<any> {
 		if (req.failures) req.failures++;
 		else req.failures = 1;
 

@@ -1,7 +1,7 @@
 import { Redis } from 'ioredis';
 import RatelimitMutex, { Ratelimit } from './RatelimitMutex';
-import fs = require('fs');
-import path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 
 declare module 'ioredis' {
