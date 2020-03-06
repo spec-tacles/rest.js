@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;src/structures/Bucket&quot; | @spectacles/rest - v0.6.1</title>
+	<title>&quot;src/__mocks__/util&quot; | @spectacles/rest - v0.6.1</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_src_structures_bucket_.html">&quot;src/structures/Bucket&quot;</a>
+					<a href="_src___mocks___util_.html">&quot;src/__mocks__/util&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;src/structures/Bucket&quot;</h1>
+			<h1>External module &quot;src/__mocks__/util&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,12 +71,47 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Classes</h3>
+							<h3>Variables</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/_src_structures_bucket_.bucket.html" class="tsd-kind-icon">Bucket</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_src___mocks___util_.html#__now" class="tsd-kind-icon">__now</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_src___mocks___util_.html#__start" class="tsd-kind-icon">__start</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_src___mocks___util_.html#pause" class="tsd-kind-icon">pause</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="__now" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> __now</h3>
+					<div class="tsd-signature tsd-kind-icon">__now<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">SpyInstance</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">[]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;jest.spyOn(Date, &#x27;now&#x27;).mockReturnValue(__start)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/f873a10/src/__mocks__/util.ts#L2">src/__mocks__/util.ts:2</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="__start" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> __start</h3>
+					<div class="tsd-signature tsd-kind-icon">__start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;Date.now()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/f873a10/src/__mocks__/util.ts#L1">src/__mocks__/util.ts:1</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="pause" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> pause</h3>
+					<div class="tsd-signature tsd-kind-icon">pause<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Mock</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;jest.fn((timeout: number) &#x3D;&gt; {__now.mockReturnValue(Date.now() + timeout);return Promise.resolve();})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/f873a10/src/__mocks__/util.ts#L5">src/__mocks__/util.ts:5</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -89,7 +124,7 @@
 					<li class="label tsd-is-external">
 						<span>Internals</span>
 					</li>
-					<li class=" tsd-kind-external-module">
+					<li class="current tsd-kind-external-module">
 						<a href="_src___mocks___util_.html">&quot;src/__mocks__/util&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -110,7 +145,7 @@
 					<li class=" tsd-kind-external-module">
 						<a href="_src_mutexes_redis_.html">&quot;src/mutexes/<wbr>Redis&quot;</a>
 					</li>
-					<li class="current tsd-kind-external-module">
+					<li class=" tsd-kind-external-module">
 						<a href="_src_structures_bucket_.html">&quot;src/structures/<wbr>Bucket&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -144,8 +179,14 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-external-module">
-						<a href="../classes/_src_structures_bucket_.bucket.html" class="tsd-kind-icon">Bucket</a>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_src___mocks___util_.html#__now" class="tsd-kind-icon">__now</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_src___mocks___util_.html#__start" class="tsd-kind-icon">__start</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_src___mocks___util_.html#pause" class="tsd-kind-icon">pause</a>
 					</li>
 				</ul>
 			</nav>
