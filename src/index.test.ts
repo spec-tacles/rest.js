@@ -1,19 +1,9 @@
-import { Rest, RedisMutex, Events, Retry } from '.';
-import AbortController from 'abort-controller';
-// import Redis = require('ioredis');
-import fetch, { Response, RequestInit } from 'node-fetch';
-import { Ratelimit } from './mutexes/RatelimitMutex';
+import { Rest } from '.';
+import fetch, { Response } from 'node-fetch';
 
-jest.mock('node-fetch', () => {
-	const actualFetch = jest.requireActual('node-fetch');
-	return {
-		...actualFetch,
-		__esModule: true,
-		default: jest.fn(actualFetch),
-	};
-});
+jest.mock('node-fetch');
 
-const mockedFetch = fetch as any as jest.Mock<Promise<Response>, [RequestInit]>;
+const mockedFetch = fetch as any as jest.Mock<Promise<Response>>;
 
 let rest: Rest;
 
