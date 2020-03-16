@@ -3,10 +3,13 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  compile:
+  jest:
+    name: Jest
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
     - name: Install and compile
       run: npm install
+    - name: Test
+      run: npm test
