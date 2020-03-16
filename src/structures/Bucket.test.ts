@@ -2,7 +2,7 @@ import fetch, { Response, Headers } from 'node-fetch';
 import Bucket from './Bucket';
 import Rest from './Rest';
 import Events from '../types/Events';
-import { Request } from '..';
+import { Request, RetryReason } from '..';
 
 jest.mock('node-fetch');
 jest.mock('../mutexes/Local');
@@ -52,6 +52,66 @@ test('makes single request', async () => {
 	expect(emitter).toBeCalledTimes(2);
 	expect(emitter).toHaveBeenNthCalledWith(1, Events.REQUEST, req);
 	expect(emitter).toHaveBeenLastCalledWith(Events.RESPONSE, req, res, {
+		limit: 5,
+		timeout: 2500,
+	});
+});
+
+test('retries after 429', async () => {
+	const res429 = new Response('{"foo":"bar"}', {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-Ratelimit-Limit': '5',
+			'X-Ratelimit-Reset-After': '2.5',
+			'Retry-After': '2500'
+		},
+		status: 429,
+	});
+
+	const res200 = new Response('{"foo":"bar"}', {
+		headers: {
+			'Content-Type': 'application/json',
+			'X-Ratelimit-Limit': '5',
+			'X-Ratelimit-Reset-After': '2.5',
+		},
+		status: 200,
+	});
+
+	let calls = 0;
+	mockedFetch.mockImplementation(async () => {
+		if (calls++ === 0) return res429;
+		return res200;
+	});
+
+	const emitter = jest.spyOn(rest, 'emit');
+	const req: Request = {
+		endpoint: 'foo',
+		body: '',
+	};
+
+	const data = await bucket.make(req);
+
+	expect(req.headers).toBeInstanceOf(Headers);
+	expect((req.headers as Headers).get('x-ratelimit-precision')).toBe('millisecond');
+	expect(data).toStrictEqual({ foo: 'bar' });
+	expect(emitter).toBeCalledTimes(5);
+	expect(emitter).toHaveBeenNthCalledWith(1, Events.REQUEST, req);
+	expect(emitter).toHaveBeenNthCalledWith(2, Events.RESPONSE, req, res429, {
+		limit: 5,
+		timeout: 2500,
+	});
+	expect(emitter).toHaveBeenNthCalledWith(3, Events.RETRY, {
+		reason: RetryReason.RATELIMIT,
+		delay: 2500,
+		request: req,
+		response: res429,
+		ratelimit: {
+			limit: 5,
+			timeout: 2500,
+		},
+	});
+	expect(emitter).toHaveBeenNthCalledWith(4, Events.REQUEST, req);
+	expect(emitter).toHaveBeenNthCalledWith(5, Events.RESPONSE, req, res200, {
 		limit: 5,
 		timeout: 2500,
 	});
