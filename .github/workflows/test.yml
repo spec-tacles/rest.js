@@ -6,9 +6,15 @@ jobs:
   jest:
     name: Jest
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['10', '12']
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - name: Use Node ${{ matrix.node }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node }}
     - name: Install and compile
       run: npm install
     - name: Test
