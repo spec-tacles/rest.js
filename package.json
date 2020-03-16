@@ -44,6 +44,7 @@
     "typescript": "^3.5.3"
   },
   "jest": {
+    "rootDir": "./src",
     "testEnvironment": "node"
   }
 }
