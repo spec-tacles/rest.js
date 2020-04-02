@@ -61,7 +61,7 @@ export default class Bucket {
 		if (globally) ratelimit.global = globally === 'true';
 		if (limit) ratelimit.limit = Number(limit);
 		if (resetAfter) ratelimit.timeout = Number(resetAfter) * 1000;
-		this.rest.emit(Events.RESPONSE, req, res, ratelimit);
+		this.rest.emit(Events.RESPONSE, req, res.clone(), ratelimit);
 
 		// set ratelimiting information
 		await this.mutex.set(this.route, ratelimit);
@@ -73,7 +73,7 @@ export default class Bucket {
 				reason: RetryReason.RATELIMIT,
 				delay,
 				request: req,
-				response: res,
+				response: res.clone(),
 				ratelimit,
 			});
 
@@ -85,7 +85,7 @@ export default class Bucket {
 				reason: RetryReason.SERVER_ERROR,
 				delay,
 				request: req,
-				response: res,
+				response: res.clone(),
 				ratelimit,
 			});
 
@@ -93,7 +93,7 @@ export default class Bucket {
 			return this.retry(req, res);
 		}
 
-		if (!res.ok) throw new HTTPError(res, await res.text());
+		if (!res.ok) throw new HTTPError(res.clone(), await res.text());
 		if (res.headers.get('content-type') === 'application/json') return res.json();
 		return res.blob();
 	}

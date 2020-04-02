@@ -29,14 +29,15 @@ test('creates channel buckets', () => {
 });
 
 test('makes single request', async () => {
-	const res = new Response('{"foo":"bar"}', {
+	const res = new Response(Buffer.from('{"foo":"bar"}'), {
 		headers: {
 			'Content-Type': 'application/json',
 			'X-Ratelimit-Limit': '5',
 			'X-Ratelimit-Reset-After': '2.5',
 		},
+		url: '',
 	});
-	mockedFetch.mockResolvedValue(res);
+	mockedFetch.mockResolvedValue(res.clone());
 
 	const emitter = jest.spyOn(rest, 'emit');
 	const req: Request = {
@@ -66,6 +67,7 @@ test('retries after 429', async () => {
 			'Retry-After': '2500'
 		},
 		status: 429,
+		url: '',
 	});
 
 	const res200 = new Response('{"foo":"bar"}', {
@@ -75,12 +77,13 @@ test('retries after 429', async () => {
 			'X-Ratelimit-Reset-After': '2.5',
 		},
 		status: 200,
+		url: '',
 	});
 
 	let calls = 0;
 	mockedFetch.mockImplementation(async () => {
-		if (calls++ === 0) return res429;
-		return res200;
+		if (calls++ === 0) return res429.clone();
+		return res200.clone();
 	});
 
 	const emitter = jest.spyOn(rest, 'emit');
