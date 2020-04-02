@@ -39,7 +39,7 @@ export default class RedisMutex extends RatelimitMutex {
 	public async set(route: string, limits: Partial<Ratelimit>): Promise<void> {
 		const pipe = this.redis.pipeline();
 		if (limits.timeout) {
-			if (limits.global) pipe.set(this.keys.global, true, 'px', limits.timeout);
+			if (limits.global) pipe.set(this.keys.global, 'true', 'px', limits.timeout);
 			else pipe.pexpire(this.keys.remaining(route), limits.timeout);
 		}
 		pipe.set(this.keys.limit(route), limits.limit || 0);
