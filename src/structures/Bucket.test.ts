@@ -64,7 +64,8 @@ test('retries after 429', async () => {
 			'Content-Type': 'application/json',
 			'X-Ratelimit-Limit': '5',
 			'X-Ratelimit-Reset-After': '2.5',
-			'Retry-After': '2500'
+			'Retry-After': '2500',
+			'Via': '1.1 google'
 		},
 		status: 429,
 		url: '',

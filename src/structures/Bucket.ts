@@ -68,7 +68,29 @@ export default class Bucket {
 
 		// retry on some errors
 		if (res.status === 429) {
-			const delay = Number(res.headers.get('retry-after') || 0);
+			let delay: number;
+			const retry = res.headers.get('retry-after');
+			if (retry) {
+				const retryInt = parseInt(retry, 10);
+
+				// Discord gives retry-after in ms (non-compliant with HTTP).
+				// CloudFlare gives retry-after in seconds (compliant).
+				// This may be changed in the future.
+
+				if (isNaN(retryInt)) {
+					// if the retry-after isn't a number, assume it's a date
+					delay = new Date(retry).valueOf() - Date.now(); // CF retry-after, in HTTP date
+				} else if (res.headers.has('via')) {
+					// CF does not send a Via header, so this is probably a response from Discord.
+					delay = retryInt; // Discord retry-after, in ms
+				} else {
+					delay = retryInt * 1e3; // CF retry-after, in seconds
+				}
+			} else {
+				// some sane defaults if there's no retry-after
+				delay = ratelimit.timeout ?? 1e3;
+			}
+
 			this.rest.emit(Events.RETRY, {
 				reason: RetryReason.RATELIMIT,
 				delay,
