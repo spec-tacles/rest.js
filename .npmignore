@@ -1,4 +1,11 @@
 src/
 node_modules/
 test/
+docs/
+.vscode/
+.github/
+scripts/
+
 .env
+babel.config.js
+tsconfig.json
