@@ -1,4 +1,4 @@
-import https from 'https';
+import * as https from 'https';
 import { EventEmitter } from 'events';
 import { Headers, HeadersInit, RequestInit } from 'node-fetch';
 import { Readable } from 'stream';
@@ -6,8 +6,8 @@ import LocalMutex from '../mutexes/Local';
 import RatelimitMutex from '../mutexes/RatelimitMutex';
 import Request from '../types/Request';
 import Bucket from './Bucket';
-import FormData from 'form-data';
-import pkg from '../../package.json';
+import * as FormData from 'form-data';
+import * as pkg from '../../package.json';
 
 export enum TokenType {
 	BOT = 'Bot',
