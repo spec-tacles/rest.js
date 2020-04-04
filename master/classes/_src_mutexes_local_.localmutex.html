@@ -112,17 +112,17 @@
 					<div class="tsd-signature tsd-kind-icon">global<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L10">src/mutexes/Local.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/Local.ts#L8">src/mutexes/Local.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="limits" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> limits</h3>
-					<div class="tsd-signature tsd-kind-icon">limits<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_local_.localratelimit.html" class="tsd-signature-type">LocalRatelimit</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Map()</span></div>
+					<div class="tsd-signature tsd-kind-icon">limits<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_local_.localratelimit.html" class="tsd-signature-type">LocalRatelimit</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_local_.localratelimit.html" class="tsd-signature-type">LocalRatelimit</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">"remaining"</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Map()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L11">src/mutexes/Local.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/Local.ts#L9">src/mutexes/Local.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -140,7 +140,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_src_mutexes_ratelimitmutex_.ratelimitmutex.html">RatelimitMutex</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimitmutex.html#claim">claim</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/RatelimitMutex.ts#L12">src/mutexes/RatelimitMutex.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/RatelimitMutex.ts#L13">src/mutexes/RatelimitMutex.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -167,7 +167,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_src_mutexes_ratelimitmutex_.ratelimitmutex.html">RatelimitMutex</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimitmutex.html#gettimeout">getTimeout</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L34">src/mutexes/Local.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/Local.ts#L29">src/mutexes/Local.ts:29</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -184,14 +184,14 @@
 					<a name="set" class="tsd-anchor"></a>
 					<h3>set</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>route<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, limits<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_ratelimitmutex_.ratelimit.html" class="tsd-signature-type">Ratelimit</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">(</span>route<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, newLimits<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_ratelimitmutex_.ratelimit.html" class="tsd-signature-type">Ratelimit</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_src_mutexes_ratelimitmutex_.ratelimitmutex.html">RatelimitMutex</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimitmutex.html#set">set</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L13">src/mutexes/Local.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/Local.ts#L11">src/mutexes/Local.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -200,7 +200,7 @@
 									<h5>route: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>limits: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_ratelimitmutex_.ratelimit.html" class="tsd-signature-type">Ratelimit</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>newLimits: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_mutexes_ratelimitmutex_.ratelimit.html" class="tsd-signature-type">Ratelimit</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>

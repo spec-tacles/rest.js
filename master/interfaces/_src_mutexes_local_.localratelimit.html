@@ -73,7 +73,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">LocalRatelimit</span>
+						<a href="_src_mutexes_ratelimitmutex_.ratelimit.html" class="tsd-signature-type">Ratelimit</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">LocalRatelimit</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -85,8 +90,10 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_src_mutexes_local_.localratelimit.html#expiresat" class="tsd-kind-icon">expires<wbr>At</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_src_mutexes_local_.localratelimit.html#limit" class="tsd-kind-icon">limit</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_src_mutexes_local_.localratelimit.html#remaining" class="tsd-kind-icon">remaining</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_src_mutexes_local_.localratelimit.html#global" class="tsd-kind-icon">global</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_src_mutexes_local_.localratelimit.html#limit" class="tsd-kind-icon">limit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_src_mutexes_local_.localratelimit.html#remaining" class="tsd-kind-icon">remaining</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="_src_mutexes_local_.localratelimit.html#timeout" class="tsd-kind-icon">timeout</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,27 +107,51 @@
 					<div class="tsd-signature tsd-kind-icon">expires<wbr>At<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L4">src/mutexes/Local.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/Local.ts#L4">src/mutexes/Local.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="global" class="tsd-anchor"></a>
+					<h3>global</h3>
+					<div class="tsd-signature tsd-kind-icon">global<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_src_mutexes_ratelimitmutex_.ratelimit.html">Ratelimit</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimit.html#global">global</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/RatelimitMutex.ts#L6">src/mutexes/RatelimitMutex.ts:6</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="limit" class="tsd-anchor"></a>
 					<h3>limit</h3>
 					<div class="tsd-signature tsd-kind-icon">limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="_src_mutexes_ratelimitmutex_.ratelimit.html">Ratelimit</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimit.html#limit">limit</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L5">src/mutexes/Local.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/RatelimitMutex.ts#L7">src/mutexes/RatelimitMutex.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="remaining" class="tsd-anchor"></a>
 					<h3>remaining</h3>
 					<div class="tsd-signature tsd-kind-icon">remaining<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="_src_mutexes_ratelimitmutex_.ratelimit.html">Ratelimit</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimit.html#remaining">remaining</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/286b8bf/src/mutexes/Local.ts#L6">src/mutexes/Local.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/RatelimitMutex.ts#L9">src/mutexes/RatelimitMutex.ts:9</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="timeout" class="tsd-anchor"></a>
+					<h3>timeout</h3>
+					<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_src_mutexes_ratelimitmutex_.ratelimit.html">Ratelimit</a>.<a href="_src_mutexes_ratelimitmutex_.ratelimit.html#timeout">timeout</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/556f840/src/mutexes/RatelimitMutex.ts#L8">src/mutexes/RatelimitMutex.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -204,11 +235,17 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="_src_mutexes_local_.localratelimit.html#expiresat" class="tsd-kind-icon">expires<wbr>At</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="_src_mutexes_local_.localratelimit.html#global" class="tsd-kind-icon">global</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="_src_mutexes_local_.localratelimit.html#limit" class="tsd-kind-icon">limit</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="_src_mutexes_local_.localratelimit.html#remaining" class="tsd-kind-icon">remaining</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="_src_mutexes_local_.localratelimit.html#timeout" class="tsd-kind-icon">timeout</a>
 							</li>
 						</ul>
 					</li>
