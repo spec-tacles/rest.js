@@ -18,7 +18,7 @@ export default abstract class RatelimitMutex {
 			try {
 				// keep checking for a timeout while we don't have 0 and the request isn't aborted
 				let timeout = await this.getTimeout(route);
-				while (timeout > 0 && (!signal || !signal.aborted)) {
+				while (timeout > 0 && !signal?.aborted) {
 					await pause(timeout);
 					timeout = await this.getTimeout(route);
 				}

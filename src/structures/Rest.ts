@@ -44,13 +44,13 @@ export default class Rest extends EventEmitter {
 	constructor(public token: string, options: Partial<Options> = {}) {
 		super();
 		this.options = {
-			tokenType: options.tokenType || TokenType.BOT,
-			base: options.base || 'https://discordapp.com',
-			version: options.version || 6,
-			agent: options.agent || new https.Agent({ keepAlive: true }),
-			ua: options.ua || `DiscordBot (https://github.com/spec-tacles/rest, ${pkg.version})`,
-			mutex: options.mutex || new LocalMutex(),
-			retryLimit: options.retryLimit || 5,
+			tokenType: options.tokenType ?? TokenType.BOT,
+			base: options.base ?? 'https://discordapp.com',
+			version: options.version ?? 6,
+			agent: options.agent ?? new https.Agent({ keepAlive: true }),
+			ua: options.ua ?? `DiscordBot (https://github.com/spec-tacles/rest, ${pkg.version})`,
+			mutex: options.mutex ?? new LocalMutex(),
+			retryLimit: options.retryLimit ?? 5,
 		};
 
 		Object.defineProperty(this, 'token', { enumerable: false });
@@ -101,7 +101,7 @@ export default class Rest extends EventEmitter {
 
 	public make(req: Request): Promise<any> {
 		// configure route and ratelimiter
-		const route = Bucket.makeRoute(req.method || 'get', req.endpoint || '');
+		const route = Bucket.makeRoute(req.method ?? 'get', req.endpoint ?? '');
 		let b = this.buckets.get(route);
 		if (!b) {
 			b = new Bucket(this, route);

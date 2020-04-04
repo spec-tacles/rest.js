@@ -32,7 +32,7 @@ export default class RedisMutex extends RatelimitMutex {
 		this.keys = {
 			global: `${prefix ? `${prefix}:` : '' }global`,
 			remaining: (route: string) => `${prefix ? `${prefix}:` : '' }${route}:remaining`,
-			limit: (route: string) => `${ prefix ? `${prefix}:` : '' }${route}:limit`
+			limit: (route: string) => `${prefix ? `${prefix}:` : '' }${route}:limit`
 		}
 	}
 
