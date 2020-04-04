@@ -56,11 +56,13 @@ export default class Bucket {
 		const globally = res.headers.get('x-ratelimit-global');
 		const limit = res.headers.get('x-ratelimit-limit');
 		const resetAfter = res.headers.get('x-ratelimit-reset-after');
+		const remaining = res.headers.get('x-ratelimit-remaining');
 
 		const ratelimit: Partial<Ratelimit> = {};
 		if (globally) ratelimit.global = globally === 'true';
 		if (limit) ratelimit.limit = Number(limit);
 		if (resetAfter) ratelimit.timeout = Number(resetAfter) * 1000;
+		if (remaining) ratelimit.remaining = Number(remaining);
 		this.rest.emit(Events.RESPONSE, req, res.clone(), ratelimit);
 
 		// set ratelimiting information

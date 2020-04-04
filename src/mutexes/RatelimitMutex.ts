@@ -6,6 +6,7 @@ export interface Ratelimit {
 	global: boolean;
 	limit: number;
 	timeout: number;
+	remaining: number;
 }
 
 export default abstract class RatelimitMutex {

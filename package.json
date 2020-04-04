@@ -6,8 +6,9 @@
   "types": "typings/src/index.d.ts",
   "scripts": {
     "test": "jest",
-    "dev": "npm run prepare && env-cmd node --trace-warnings dist/test/multi_process.js",
-    "prepare": "npm test && rimraf typings dist && tsc && ncp scripts dist/scripts",
+    "dev": "npm run build && env-cmd node --trace-warnings dist/test/index.js",
+    "build": "rimraf typings dist && tsc && ncp scripts dist/scripts",
+    "prepare": "npm test && npm run build",
     "docs": "typedoc --out docs --mode modules --entryPoint src/index.ts src"
   },
   "repository": {

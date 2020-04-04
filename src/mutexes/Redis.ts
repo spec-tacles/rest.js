@@ -30,9 +30,9 @@ export default class RedisMutex extends RatelimitMutex {
 		});
 
 		this.keys = {
-			global: `${ prefix ? `${ prefix }:` : '' }global`,
-			remaining: (route: string) => `${ prefix ? `${ prefix }:` : '' }${route}:remaining`,
-			limit: (route: string) => `${ prefix ? `${ prefix }:` : '' }${route}:limit`
+			global: `${prefix ? `${prefix}:` : '' }global`,
+			remaining: (route: string) => `${prefix ? `${prefix}:` : '' }${route}:remaining`,
+			limit: (route: string) => `${ prefix ? `${prefix}:` : '' }${route}:limit`
 		}
 	}
 
@@ -42,7 +42,8 @@ export default class RedisMutex extends RatelimitMutex {
 			if (limits.global) pipe.set(this.keys.global, 'true', 'px', limits.timeout);
 			else pipe.pexpire(this.keys.remaining(route), limits.timeout);
 		}
-		pipe.set(this.keys.limit(route), limits.limit || 0);
+		pipe.set(this.keys.limit(route), limits.limit ?? 0);
+		pipe.set(this.keys.remaining(route), limits.remaining ?? 0, 'nx');
 		await pipe.exec();
 	}
 

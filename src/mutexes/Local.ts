@@ -1,60 +1,52 @@
 import RatelimitMutex, { Ratelimit } from './RatelimitMutex';
 
-export interface LocalRatelimit {
+export interface LocalRatelimit extends Ratelimit {
 	expiresAt: Date;
-	limit: number;
-	remaining: number;
 }
 
 export default class LocalMutex extends RatelimitMutex {
 	public global?: Date;
-	protected limits: Map<string, Partial<LocalRatelimit>> = new Map();
+	protected limits: Map<string, Partial<LocalRatelimit> & Pick<LocalRatelimit, 'remaining'>> = new Map();
 
-	public set(route: string, limits: Partial<Ratelimit>): Promise<void> {
-		let local = this.limits.get(route);
-		if (!local) {
-			local = {};
-			this.limits.set(route, local);
+	public set(route: string, newLimits: Partial<Ratelimit>): Promise<void> {
+		let limit = this.limits.get(route);
+		if (!limit) {
+			limit = { remaining: -1 };
+			this.limits.set(route, limit);
 		}
 
-		if (limits.timeout) {
-			const expiresAt = new Date(Date.now() + limits.timeout);
-			if (limits.global) {
-				this.global = expiresAt;
-			} else {
-				this.global = undefined;
-				local.expiresAt = expiresAt;
-			}
+		if (newLimits.timeout !== undefined) {
+			const expiresAt = new Date(Date.now() + newLimits.timeout);
+			if (newLimits.global) this.global = expiresAt;
+			else limit.expiresAt = expiresAt;
 		}
 
-		if (limits.limit) local.limit = limits.limit;
+		limit.limit = newLimits.limit ?? 0;
+		if (limit.remaining < 0 && newLimits.remaining !== undefined) limit.remaining = newLimits.remaining;
 		return Promise.resolve();
 	}
 
 	protected getTimeout(route: string): Promise<number> {
-		if (this.global) return Promise.resolve(this.global.valueOf() - Date.now());
+		const globalExpiration = this.global?.valueOf() ?? 0;
+		if (globalExpiration > Date.now()) return Promise.resolve(globalExpiration - Date.now());
 
 		let ratelimit = this.limits.get(route);
+
+		// prepare an empty ratelimit object
 		if (!ratelimit) {
-			ratelimit = {};
+			ratelimit = { remaining: -1 };
 			this.limits.set(route, ratelimit);
-		}
-
-		if (!ratelimit.expiresAt || ratelimit.expiresAt.valueOf() <= Date.now()) {
-			ratelimit.expiresAt = undefined;
-			ratelimit.remaining = ratelimit.limit;
-		}
-
-		if (ratelimit.remaining === undefined) {
-			if (ratelimit.limit === undefined) ratelimit.limit = 1;
-			ratelimit.remaining = ratelimit.limit - 1;
 			return Promise.resolve(0);
 		}
 
+		// if we're currently ratelimited, return the time until we're not
 		if (ratelimit.remaining <= 0) {
-			const ttl = ratelimit.expiresAt ? ratelimit.expiresAt.valueOf() - Date.now() : 0;
-			if (ttl > 0) return Promise.resolve(ttl);
-			return Promise.resolve(1e3);
+			if (ratelimit.expiresAt) {
+				const ttl = Math.max(ratelimit.expiresAt.valueOf() - Date.now(), 0);
+				return Promise.resolve(ttl);
+			}
+
+			return Promise.resolve(1e2);
 		}
 
 		ratelimit.remaining--;
