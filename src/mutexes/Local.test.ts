@@ -11,11 +11,20 @@ beforeEach(() => {
 	mux = new Local();
 });
 
-test.skip('setting nothing changes nothing', async () => {
+afterEach(() => {
+	mockedPause.mockClear();
+});
+
+test('setting nothing changes nothing', async () => {
+	jest.setTimeout(200);
+
 	expect(await mux.set('foo', {})).toBeUndefined();
 	expect(mux.global).toBeUndefined();
-	expect(await mux.claim('foo')).toBeUndefined();
-	expect(mockedPause).toHaveBeenCalledTimes(0);
+	expect(mux.claim('foo')).resolves.toBeUndefined();
+
+	expect(await mux.set('foo', { remaining: 1 }));
+	expect(mockedPause).toHaveBeenCalledTimes(1);
+	expect(mockedPause).toHaveBeenCalledWith(100);
 });
 
 test.skip('setting only timeout does not cause delay', async () => {
@@ -30,13 +39,13 @@ test.skip('setting only global does not cause delay', async () => {
 	expect(mockedPause).toHaveBeenCalledTimes(0);
 });
 
-test.skip('setting only limit does not cause delay', async () => {
+test('setting only limit does not cause delay', async () => {
 	await mux.set('foo', { limit: 5 });
 	await mux.claim('foo');
 	expect(mockedPause).toHaveBeenCalledTimes(0);
 });
 
-test.skip('setting timeout, limit causes delay', async () => {
+test('setting timeout, limit causes delay', async () => {
 	await mux.set('foo', { timeout: 5, limit: 1 });
 	await mux.claim('foo');
 	expect(mockedPause).toHaveBeenCalledTimes(0);
@@ -44,5 +53,5 @@ test.skip('setting timeout, limit causes delay', async () => {
 	await mux.claim('foo');
 
 	expect(mockedPause).toHaveBeenCalledTimes(1);
-	expect(mockedPause).toHaveBeenCalledWith(1000);
+	expect(mockedPause).toHaveBeenCalledWith(5);
 });
