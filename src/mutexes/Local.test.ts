@@ -20,20 +20,16 @@ test('setting nothing changes nothing', async () => {
 
 	expect(await mux.set('foo', {})).toBeUndefined();
 	expect(mux.global).toBeUndefined();
-	expect(mux.claim('foo')).resolves.toBeUndefined();
-
-	expect(await mux.set('foo', { remaining: 1 }));
-	expect(mockedPause).toHaveBeenCalledTimes(1);
-	expect(mockedPause).toHaveBeenCalledWith(100);
+	expect(await mux.claim('foo')).toBeUndefined();
 });
 
-test.skip('setting only timeout does not cause delay', async () => {
+test('setting only timeout does not cause delay', async () => {
 	await mux.set('foo', { timeout: 5000 });
 	await mux.claim('foo');
 	expect(mockedPause).toHaveBeenCalledTimes(0);
 });
 
-test.skip('setting only global does not cause delay', async () => {
+test('setting only global does not cause delay', async () => {
 	await mux.set('foo', { global: true });
 	await mux.claim('foo');
 	expect(mockedPause).toHaveBeenCalledTimes(0);

@@ -11,8 +11,8 @@ r.on('retry', console.log);
 r.on('response', (...args) => console.log(new Date(), inspect(args, { depth: 1 })));
 
 (async () => {
-	for (let i = 0; i < 31; i++) {
-		r.get('/users/618570414855028767');
+	for (let i = 0; i < 2; i++) {
+		await r.post('/guilds/619013795293167626/channels', { name: 'foo' });
 		// console.log('done');
 	}
 })();

@@ -22,7 +22,7 @@ export default class LocalMutex extends RatelimitMutex {
 		}
 
 		limit.limit = newLimits.limit ?? 0;
-		if (limit.remaining === undefined) limit.remaining = newLimits.remaining ?? newLimits.limit;
+		if (limit.remaining === undefined) limit.remaining = newLimits.remaining ?? newLimits.limit ?? Infinity;
 		return Promise.resolve();
 	}
 
