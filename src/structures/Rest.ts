@@ -12,6 +12,7 @@ import * as pkg from '../../package.json';
 export enum TokenType {
 	BOT = 'Bot',
 	BEARER = 'Bearer',
+	BASIC = 'Basic',
 }
 
 export interface Options {
