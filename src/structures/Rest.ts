@@ -15,6 +15,7 @@ export enum TokenType {
 }
 
 export interface Options {
+	token?: string;
 	tokenType: TokenType,
 	base: string,
 	version: number,
@@ -41,9 +42,19 @@ export default class Rest extends EventEmitter {
 	public options: Options;
 	public buckets: Map<string, Bucket> = new Map();
 
-	constructor(public token: string, options: Partial<Options> = {}) {
+	constructor(token: string, options?: Partial<Options>)
+	constructor(options?: Partial<Options>)
+	constructor(token: string | Partial<Options> = {}, options: Partial<Options> = {}) {
 		super();
+
+		if (typeof token === 'string') {
+			options.token = token;
+		} else {
+			options = token;
+		}
+
 		this.options = {
+			token: options.token,
 			tokenType: options.tokenType ?? TokenType.BOT,
 			base: options.base ?? 'https://discordapp.com',
 			version: options.version ?? 6,
@@ -53,7 +64,7 @@ export default class Rest extends EventEmitter {
 			retryLimit: options.retryLimit ?? 5,
 		};
 
-		Object.defineProperty(this, 'token', { enumerable: false });
+		Object.defineProperty(this.options, 'token', { enumerable: false });
 	}
 
 	public post(endpoint: string, body: any, options?: Request) {
@@ -136,10 +147,12 @@ export default class Rest extends EventEmitter {
 		}
 
 		if (req.reason) Rest.setHeader(req, 'X-Audit-Log-Reason', req.reason);
-		Rest.setHeaders(req, {
-			Authorization: `${this.options.tokenType} ${this.token}`,
-			'User-Agent': this.options.ua,
-		});
+
+		if (this.options.token) {
+			Rest.setHeader(req, 'Authorization', `${this.options.tokenType} ${this.options.token}`);
+		}
+
+		Rest.setHeader(req, 'User-Agent', this.options.ua);
 
 		if (!req.agent) req.agent = this.options.agent;
 	}
