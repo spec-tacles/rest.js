@@ -40,6 +40,14 @@ export default class Rest extends EventEmitter {
 		else req.headers = new Headers({ [header]: value });
 	}
 
+	public static hasHeader(req: RequestInit, header: string) {
+		if (Array.isArray(req.headers)) return req.headers.some(([name]) => name === header);
+		else if (req.headers instanceof Headers) return req.headers.has(header);
+		else if (req.headers) return Object.keys(req.headers).includes(header);
+
+		return false;
+	}
+
 	public options: Options;
 	public buckets: Map<string, Bucket> = new Map();
 
@@ -149,7 +157,7 @@ export default class Rest extends EventEmitter {
 
 		if (req.reason) Rest.setHeader(req, 'X-Audit-Log-Reason', req.reason);
 
-		if (this.options.token) {
+		if (this.options.token && !Rest.hasHeader(req, 'Authorization')) {
 			Rest.setHeader(req, 'Authorization', `${this.options.tokenType} ${this.options.token}`);
 		}
 
