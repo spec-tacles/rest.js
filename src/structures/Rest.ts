@@ -12,9 +12,11 @@ import * as pkg from '../../package.json';
 export enum TokenType {
 	BOT = 'Bot',
 	BEARER = 'Bearer',
+	BASIC = 'Basic',
 }
 
 export interface Options {
+	token?: string;
 	tokenType: TokenType,
 	base: string,
 	version: number,
@@ -38,12 +40,30 @@ export default class Rest extends EventEmitter {
 		else req.headers = new Headers({ [header]: value });
 	}
 
+	public static hasHeader(req: RequestInit, header: string) {
+		if (Array.isArray(req.headers)) return req.headers.some(([name]) => name === header);
+		else if (req.headers instanceof Headers) return req.headers.has(header);
+		else if (req.headers) return Object.keys(req.headers).includes(header);
+
+		return false;
+	}
+
 	public options: Options;
 	public buckets: Map<string, Bucket> = new Map();
 
-	constructor(public token: string, options: Partial<Options> = {}) {
+	constructor(token: string, options?: Partial<Options>)
+	constructor(options?: Partial<Options>)
+	constructor(token: string | Partial<Options> = {}, options: Partial<Options> = {}) {
 		super();
+
+		if (typeof token === 'string') {
+			options.token = token;
+		} else {
+			options = token;
+		}
+
 		this.options = {
+			token: options.token,
 			tokenType: options.tokenType ?? TokenType.BOT,
 			base: options.base ?? 'https://discordapp.com',
 			version: options.version ?? 6,
@@ -53,7 +73,7 @@ export default class Rest extends EventEmitter {
 			retryLimit: options.retryLimit ?? 5,
 		};
 
-		Object.defineProperty(this, 'token', { enumerable: false });
+		Object.defineProperty(this.options, 'token', { enumerable: false });
 	}
 
 	public post(endpoint: string, body: any, options?: Request) {
@@ -132,14 +152,16 @@ export default class Rest extends EventEmitter {
 			else form.append(req.files.name, req.files.file, req.files.name);
 			if (typeof req.body !== 'undefined') form.append('payload_json', req.body);
 			req.body = form;
-			Rest.setHeaders(req, form.getHeaders());
+			Rest.setHeader(req, 'Content-Type', form.getHeaders()['content-type']);
 		}
 
 		if (req.reason) Rest.setHeader(req, 'X-Audit-Log-Reason', req.reason);
-		Rest.setHeaders(req, {
-			Authorization: `${this.options.tokenType} ${this.token}`,
-			'User-Agent': this.options.ua,
-		});
+
+		if (this.options.token && !Rest.hasHeader(req, 'Authorization')) {
+			Rest.setHeader(req, 'Authorization', `${this.options.tokenType} ${this.options.token}`);
+		}
+
+		Rest.setHeader(req, 'User-Agent', this.options.ua);
 
 		if (!req.agent) req.agent = this.options.agent;
 	}
