@@ -97,7 +97,6 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_src_structures_rest_.rest.html#buckets" class="tsd-kind-icon">buckets</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_src_structures_rest_.rest.html#options" class="tsd-kind-icon">options</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_src_structures_rest_.rest.html#token" class="tsd-kind-icon">token</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="_src_structures_rest_.rest.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 							</ul>
 						</section>
@@ -127,6 +126,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_src_structures_rest_.rest.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_src_structures_rest_.rest.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_src_structures_rest_.rest.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="_src_structures_rest_.rest.html#hasheader" class="tsd-kind-icon">has<wbr>Header</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="_src_structures_rest_.rest.html#listenercount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="_src_structures_rest_.rest.html#setheader" class="tsd-kind-icon">set<wbr>Header</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="_src_structures_rest_.rest.html#setheaders" class="tsd-kind-icon">set<wbr>Headers</a></li>
@@ -142,12 +142,13 @@
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Rest<span class="tsd-signature-symbol">(</span>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_structures_rest_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_src_structures_rest_.rest.html" class="tsd-signature-type">Rest</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Rest<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_structures_rest_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_src_structures_rest_.rest.html" class="tsd-signature-type">Rest</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L42">src/structures/Rest.ts:42</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L52">src/structures/Rest.ts:52</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -156,7 +157,21 @@
 									<h5>token: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_structures_rest_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_structures_rest_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_src_structures_rest_.rest.html" class="tsd-signature-type">Rest</a></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L54">src/structures/Rest.ts:54</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_src_structures_rest_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_src_structures_rest_.rest.html" class="tsd-signature-type">Rest</a></h4>
@@ -172,7 +187,7 @@
 					<div class="tsd-signature tsd-kind-icon">buckets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="_src_structures_bucket_.bucket.html" class="tsd-signature-type">Bucket</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;new Map()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L42">src/structures/Rest.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L52">src/structures/Rest.ts:52</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -182,17 +197,7 @@
 					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_src_structures_rest_.options.html" class="tsd-signature-type">Options</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L41">src/structures/Rest.ts:41</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="token" class="tsd-anchor"></a>
-					<h3>token</h3>
-					<div class="tsd-signature tsd-kind-icon">token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L44">src/structures/Rest.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L51">src/structures/Rest.ts:51</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -266,7 +271,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L85">src/structures/Rest.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L105">src/structures/Rest.ts:105</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -339,7 +344,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L115">src/structures/Rest.ts:115</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L135">src/structures/Rest.ts:135</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -362,7 +367,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L68">src/structures/Rest.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L88">src/structures/Rest.ts:88</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -457,7 +462,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L102">src/structures/Rest.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L122">src/structures/Rest.ts:122</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -480,7 +485,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L147">src/structures/Rest.ts:147</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L169">src/structures/Rest.ts:169</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -641,7 +646,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L93">src/structures/Rest.ts:93</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L113">src/structures/Rest.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -670,7 +675,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L59">src/structures/Rest.ts:59</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L79">src/structures/Rest.ts:79</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -791,7 +796,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L76">src/structures/Rest.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L96">src/structures/Rest.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -931,6 +936,32 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
+					<a name="hasheader" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> has<wbr>Header</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Header<span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RequestInit</span>, header<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L43">src/structures/Rest.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>req: <span class="tsd-signature-type">RequestInit</span></h5>
+								</li>
+								<li>
+									<h5>header: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 					<a name="listenercount-1" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> listener<wbr>Count</h3>
@@ -975,7 +1006,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L34">src/structures/Rest.ts:34</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L36">src/structures/Rest.ts:36</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1004,7 +1035,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/8fd9c69/src/structures/Rest.ts#L28">src/structures/Rest.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/spec-tacles/rest.js/blob/d47c81e/src/structures/Rest.ts#L30">src/structures/Rest.ts:30</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1106,9 +1137,6 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_src_structures_rest_.rest.html#options" class="tsd-kind-icon">options</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_src_structures_rest_.rest.html#token" class="tsd-kind-icon">token</a>
-							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 								<a href="_src_structures_rest_.rest.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
 							</li>
@@ -1180,6 +1208,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="_src_structures_rest_.rest.html#setmaxlisteners" class="tsd-kind-icon">set<wbr>Max<wbr>Listeners</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
+								<a href="_src_structures_rest_.rest.html#hasheader" class="tsd-kind-icon">has<wbr>Header</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 								<a href="_src_structures_rest_.rest.html#listenercount-1" class="tsd-kind-icon">listener<wbr>Count</a>
