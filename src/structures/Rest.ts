@@ -152,7 +152,7 @@ export default class Rest extends EventEmitter {
 			else form.append(req.files.name, req.files.file, req.files.name);
 			if (typeof req.body !== 'undefined') form.append('payload_json', req.body);
 			req.body = form;
-			Rest.setHeaders(req, form.getHeaders());
+			Rest.setHeader(req, 'Content-Type', form.getHeaders()['content-type']);
 		}
 
 		if (req.reason) Rest.setHeader(req, 'X-Audit-Log-Reason', req.reason);
