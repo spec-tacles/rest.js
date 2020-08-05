@@ -1,0 +1,14 @@
+{
+  "name": "rest.js",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "Will Nelson <will@wnelson.xyz>",
+  "license": "MIT",
+  "dependencies": {
+    "neon-cli": "^0.4.0"
+  },
+  "scripts": {
+    "install": "neon build"
+  }
+}

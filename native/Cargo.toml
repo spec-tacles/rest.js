@@ -1,0 +1,19 @@
+[package]
+name = "rest_js"
+version = "0.1.0"
+authors = ["Will Nelson <will@wnelson.xyz>"]
+license = "MIT"
+build = "build.rs"
+edition = "2018"
+exclude = ["artifacts.json", "index.node"]
+
+[lib]
+name = "rest_js"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+neon-build = "0.4.0"
+
+[dependencies]
+neon = "0.4.0"
+spectacles-proxy = { git = "https://github.com/spec-tacles/proxy" }
