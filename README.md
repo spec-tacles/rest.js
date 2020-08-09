@@ -1,4 +1,4 @@
-# Spectacles REST
+# Spectacles REST ([moved](https://github.com/spec-tacles/spectacles.js))
 
 A REST router and ratelimiter for the Discord API. Supports local and distributed ratelimit handling; as such, requests are not sent in order.
 
